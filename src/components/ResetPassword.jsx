@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Container, TextField, Button, Typography, Box, Alert } from "@mui/material";
+import { toast } from "react-toastify";
 
 const ResetPassword = () => {
   const [searchParams] = useSearchParams();
@@ -8,6 +10,7 @@ const ResetPassword = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
+  const nav = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,14 +21,15 @@ const ResetPassword = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/api/reset", {
+      const response = await fetch("http://localhost:8000/user/api/reset", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, password }),
       });
 
       if (response.ok) {
-        setMessage("Password reset successfully!");
+        toast.success("Password reset successfully!");
+        nav("/login");
       } else {
         const data = await response.json();
         setMessage(data.error || "Failed to reset password.");
@@ -36,39 +40,39 @@ const ResetPassword = () => {
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "50px auto", textAlign: "center" }}>
-      <h2>Reset Password</h2>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "15px" }}>
-          <label>
-            New Password:
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              style={{ width: "100%", padding: "8px", marginTop: "5px" }}
-              required
-            />
-          </label>
-        </div>
-        <div style={{ marginBottom: "15px" }}>
-          <label>
-            Confirm Password:
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              style={{ width: "100%", padding: "8px", marginTop: "5px" }}
-              required
-            />
-          </label>
-        </div>
-        <button type="submit" style={{ padding: "10px 20px" }}>
+    <Container maxWidth="sm" sx={{ mt: 5 }}>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Reset Password
+      </Typography>
+      <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        <TextField
+          label="New Password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          fullWidth
+          required
+          margin="normal"
+        />
+        <TextField
+          label="Confirm Password"
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          fullWidth
+          required
+          margin="normal"
+        />
+        <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
           Reset Password
-        </button>
-      </form>
-      {message && <p style={{ marginTop: "15px", color: "red" }}>{message}</p>}
-    </div>
+        </Button>
+      </Box>
+      {message && (
+        <Alert severity="error" sx={{ mt: 3 }}>
+          {message}
+        </Alert>
+      )}
+    </Container>
   );
 };
 
