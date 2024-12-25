@@ -26,6 +26,7 @@ const Login = () => {
             navigate('/chatbox');
         }
         ).catch((error) => {
+            toast.error('Login failed! Please check your credentials');
             console.error('Login error:', error);
         });
     };
