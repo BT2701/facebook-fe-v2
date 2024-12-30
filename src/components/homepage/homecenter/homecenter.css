@@ -1,0 +1,6 @@
+.Homecenter {
+  flex: 1;
+  display: flex;
+  padding: 30px 150px;
+  flex-direction: column;
+}

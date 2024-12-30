@@ -1,0 +1,35 @@
+.notification-item{
+    height: 80px;
+    margin: 0.2em;
+}
+
+.notification-item-box{
+    height: 70px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Ẩn nội dung tràn */
+
+}
+.notification-item-box-content{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    max-height: 100%; /* Giới hạn chiều cao để không vượt quá khung */
+}
+.notification-item-mess{
+    margin-left: 0.5em;
+    max-width: 11em;
+}
+.notification-read-all{
+    background-color: white !important;
+    color: rgb(1, 57, 92) !important;
+}
+.notification-read-all:hover{
+    color: rgb(87, 174, 228) !important;
+}
+.notification-item-avt{
+    width: 55px !important;
+    height: 55px !important;
+    border-radius: 50%;
+    margin-left: 0.5em;
+}

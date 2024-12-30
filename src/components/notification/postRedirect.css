@@ -1,0 +1,46 @@
+.pr-custom-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+}
+
+.pr-custom-dialog {
+    background: white;
+    width: 100vmin;
+    height: 90vh;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.pr-custom-dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pr-custom-dialog-header h3 {
+    margin: 0;
+}
+
+
+.pr-custom-dialog-content {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.pr-custom-dialog-actions {
+    margin-top: 10px;
+    text-align: right;
+}
