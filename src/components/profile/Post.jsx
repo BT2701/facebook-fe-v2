@@ -54,7 +54,7 @@ export const Post = () => {
     const fetchPosts = async () => {
         // if (!hasMore) return;
         try {
-            const response = await axios.get(`http://localhost:8001/api/post/${currentUser}/${user?.id}?lastPostId=${lastPostId}&limit=${postsPerPage}`)
+            const response = await axios.get(`http://localhost:8000/post/api/${currentUser.id}/${user?.id}?lastPostId=${lastPostId}&limit=${postsPerPage}`)
             const fetchedPosts = await Promise.all(
                 response?.data.$values.map((post) =>
                     updatePostInfor(post.userId, post)
@@ -194,15 +194,15 @@ export const Post = () => {
                             >
                                 <Heading fontSize={23}>Intro</Heading>
                                 {user?.education && <IntroText title={`Studied at ${user?.education}`} icon={MdSchool} />}
-                                {user?.education && <IntroText title={`Lives in ${user?.education}`} icon={MdMapsHomeWork} />}
+                                {user?.address && <IntroText title={`Lives in ${user?.address}`} icon={MdMapsHomeWork} />}
                                 {user?.phone && <IntroText title={`${user?.phone}`} icon={MdOutlinePhone} />}
                                 {user?.gender && <IntroText title={`${user?.gender}`} icon={FaTransgender} />}
-                                {user?.birth && <IntroText title={`${user?.birth && convertToViDate(user?.birth)}`} icon={FaBirthdayCake} />}
+                                {user?.birthday && <IntroText title={`${user?.birthday && convertToViDate(user?.birthday)}`} icon={FaBirthdayCake} />}
                                 {user?.relationship && <IntroText title={`${user?.relationship}`} icon={AiFillHeart} />}
                                 {user?.social && <IntroLink title={`${user?.social}`} icon={IoShareSocialOutline} />}
 
                                 {
-                                    currentUser === user?.id && (
+                                    currentUser.id === user?.id && (
                                         <EditProfile w={'100%'} m={'15px auto 5px'} title={'Edit Intro'} userData={user} setUser={setUser} />
                                     )
                                 }
@@ -225,7 +225,7 @@ export const Post = () => {
                                                 likedByCurrentUser={post.likedByCurrentUser}
                                                 likeCount={post.reactions.$values.length}
                                                 commentList={post.comments.$values}
-                                                currentUserId={currentUser}
+                                                currentUserId={currentUser.id}
                                                 userCreatePost={post.userId}
                                                 setPosts={setPosts}
                                                 posts={posts}

@@ -44,13 +44,13 @@ export const UserAbout = () => {
                              <IntroText title={`Went to ${"school"}`} icon={MdAccountBalance} /> 
                             <IntroText title={`Lives in ${"currentCity"}`} icon={MdMapsHomeWork} /> 
                              <IntroText title={`From ${"homeTown"}`} icon={MdPlace} /> 
-                             <IntroText title={"relationship"} icon={AiFillHeart} /> 
-                             <IntroText title={"hobbies"} icon={MdSkateboarding} /> 
-                            <IntroText title={"interest"} icon={MdImportContacts} /> 
-                            <IntroText title={"language"} icon={MdVolumeUp} /> 
-                            <IntroText title={"date"} icon={MdPermContactCalendar} />
-                             <IntroText title={"website"} icon={MdDvr} /> 
-                            <IntroText title={"socialLink"} icon={MdQrCodeScanner} /> 
+                             <IntroText title={"Relationship"} icon={AiFillHeart} /> 
+                             <IntroText title={"Hobbies"} icon={MdSkateboarding} /> 
+                            <IntroText title={"Interest"} icon={MdImportContacts} /> 
+                            <IntroText title={"Language"} icon={MdVolumeUp} /> 
+                            <IntroText title={"Date"} icon={MdPermContactCalendar} />
+                             <IntroText title={"Website"} icon={MdDvr} /> 
+                            <IntroText title={"SocialLink"} icon={MdQrCodeScanner} /> 
                         </Box>
 
                     </Grid>

@@ -97,28 +97,29 @@ export const Signup = () => {
         title: "Missing Information",
         description: "Please fill out all fields.",
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
       return;
     }
+    
     // Kết hợp firstName và lastName thành name
+    console.log("ngày sinh:",formData.dateOfBirth);
     const userData = {
       name: `${formData.firstName} ${formData.lastName}`,
-      birth: formData.dateOfBirth,
-      avt: "", // Thay null bằng chuỗi rỗng nếu không có avatar
+      birthday: formData.dateOfBirth,
+      avatar: "", // Thay null bằng chuỗi rỗng nếu không có avatar
       phone: "", // Tương tự với phone
       email: formData.email,
       gender: formData.gender,
-      desc: "", // Thay null bằng chuỗi rỗng
-      isonline: 0,
-      lastActive: new Date(),
+      description: "", // Thay null bằng chuỗi rỗng
+      is_online: 0,
+      last_active: new Date(),
       password: formData.password,
-      Address: "", // Tương tự với Address
-      Social: "", // Tương tự với Social
-      Education: "", // Tương tự với Education
-      Relationship: "", // Tương tự với Relationship
-      TimeJoin: "2010-10-10T00:00:00", // Cập nhật TimeJoin với thời gian hiện tại
+      address: "", // Tương tự với Address
+      social: "", // Tương tự với Social
+      education: "", // Tương tự với Education
+      relationship: "", // Tương tự với Relationship
     };
 
     // Kiểm tra tính hợp lệ
@@ -127,7 +128,7 @@ export const Signup = () => {
         title: "Invalid email.",
         description: "Please enter a valid email address.",
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
       return;
@@ -138,7 +139,7 @@ export const Signup = () => {
         title: "Invalid date of birth.",
         description: "You must be at least 13 years old to sign up.",
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
       return;
@@ -150,7 +151,7 @@ export const Signup = () => {
         description:
           "Password must be at least 8 characters long, contain one uppercase letter, one number, and one special character.",
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
       return;
@@ -159,7 +160,7 @@ export const Signup = () => {
     // Nếu tất cả đều hợp lệ, thực hiện yêu cầu API
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/user`,
+        `${process.env.REACT_APP_API_URL}/user/api/register`,
         userData,
         {
           headers: {
@@ -174,7 +175,7 @@ export const Signup = () => {
           description:
             "Your account has been successfully created. Please verify your email to log in.",
           status: "success",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
         onClose();
@@ -185,7 +186,7 @@ export const Signup = () => {
         description:
           error.response?.data?.message || "Failed to create account",
         status: "error",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     }

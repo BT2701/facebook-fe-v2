@@ -35,12 +35,12 @@ export const ProfileNav = () => {
         const getUser = async () => {
             const urlParams = new URLSearchParams(location.search);
             const idFromUrl = urlParams.get('id');
-            const userId = idFromUrl || currentUser;
+            const userId = idFromUrl || currentUser.id;
 
             if (userId && userId !== -1) {
                 const response = await getUserById(userId);
                 setUser(response?.data);
-                setMyPic(response?.data.avt);
+                setMyPic(response?.data.avatar);
                 // Cập nhật trạng thái bạn bè
                 if (response?.data.friendStatus) {
                     setFriendStatus(response?.data.friendStatus); // Giả sử API trả về trạng thái
@@ -58,9 +58,9 @@ export const ProfileNav = () => {
             const urlParams = new URLSearchParams(location.search);
             const userId = urlParams.get('id');
 
-            if (userId === currentUser) return;
+            if (userId === currentUser.id) return;
             // console.log(1)
-            const resGetReq3 = await getFriendByUserId1AndUserId2(currentUser, userId);
+            const resGetReq3 = await getFriendByUserId1AndUserId2(currentUser.id, userId);
             // console.log(resGetReq3);
             if (resGetReq3 && resGetReq3.length !== 0) {
                 setFriendStatus("friend");
@@ -68,7 +68,7 @@ export const ProfileNav = () => {
             }
 
             // console.log(2)
-            const resGetReq = await getRequestBySenderAndReceiver(userId, currentUser);
+            const resGetReq = await getRequestBySenderAndReceiver(userId, currentUser.id);
             // console.log(resGetReq);
             if (resGetReq && resGetReq.length !== 0) {
                 setFriendStatus("waiting");
@@ -76,7 +76,7 @@ export const ProfileNav = () => {
             }
 
             // console.log(3)
-            const resGetReq2 = await getRequestBySenderAndReceiver(currentUser, userId);
+            const resGetReq2 = await getRequestBySenderAndReceiver(currentUser.id, userId);
             // console.log(resGetReq2);
             if (resGetReq2 && resGetReq2.length !== 0) {
                 setFriendStatus("requestFriend");
@@ -112,11 +112,11 @@ export const ProfileNav = () => {
                             <Box p={5} mt={7}>
                                 <Heading>{user?.name}</Heading>
                                 <Text color={'grey'}>{5} Friends</Text>
-                                <Text maxW="500px" >{user?.desc}</Text>
+                                <Text maxW="500px" >{user?.description}</Text>
                             </Box>
                             <Spacer />
                             <Box>
-                                {currentUser === user?.id ? (
+                                {currentUser.id === user?.id ? (
                                     <EditProfilePic
                                         title="Edit avatar"
                                         user={user}
@@ -126,7 +126,7 @@ export const ProfileNav = () => {
                                 ) : (
                                     <>
                                         {friendStatus === "notFriend" && (
-                                            <Button colorScheme="blue" onClick={() => handleSendRequestv2(currentUser, user?.id, setFriendStatus, setIsRefreshFriends)}>
+                                            <Button colorScheme="blue" onClick={() => handleSendRequestv2(currentUser.id, user?.id, setFriendStatus, setIsRefreshFriends)}>
                                                 Add friend
                                             </Button>
                                         )}
@@ -152,7 +152,7 @@ export const ProfileNav = () => {
                                                                 <Button ref={cancelRef} onClick={onClose}>
                                                                     Cancel
                                                                 </Button>
-                                                                <Button colorScheme="red" onClick={() => handleRemoveFriend(currentUser, user?.id, setFriendStatus, setIsRefreshFriends, onClose)} ml={3}>
+                                                                <Button colorScheme="red" onClick={() => handleRemoveFriend(currentUser.id, user?.id, setFriendStatus, setIsRefreshFriends, onClose)} ml={3}>
                                                                     Remove
                                                                 </Button>
                                                             </AlertDialogFooter>
@@ -165,7 +165,7 @@ export const ProfileNav = () => {
                                             <>
                                                 <Button 
                                                     colorScheme="blue" 
-                                                    onClick={() => handleRemoveRequestv2(currentUser, user?.id, setFriendStatus, setIsRefreshFriends, onClose)} ml={3}>
+                                                    onClick={() => handleRemoveRequestv2(currentUser.id, user?.id, setFriendStatus, setIsRefreshFriends, onClose)} ml={3}>
                                                     Cancel Request
                                                 </Button>
                                                 {/* <Button colorScheme="green" onClick={onOpen}>
@@ -201,11 +201,11 @@ export const ProfileNav = () => {
                                             <>
                                                 <Button 
                                                     colorScheme="blue" 
-                                                    onClick={() => handleAcceptRequestv2(currentUser, user?.id, setFriendStatus, setIsRefreshFriends)}>
+                                                    onClick={() => handleAcceptRequestv2(currentUser.id, user?.id, setFriendStatus, setIsRefreshFriends)}>
                                                     Confirm
                                                 </Button>
                                                 <Button 
-                                                    onClick={() => handleCancelRequestv2(currentUser, user?.id, setFriendStatus, setIsRefreshFriends, onClose)} ml={2}
+                                                    onClick={() => handleCancelRequestv2(currentUser.id, user?.id, setFriendStatus, setIsRefreshFriends, onClose)} ml={2}
                                                     _hover={{ bg: "#d3d3d3" }}
                                                 >
                                                     Cancel

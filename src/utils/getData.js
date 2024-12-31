@@ -48,10 +48,10 @@ export const getDataIterate = (id, state, setState) => {
 export const getUserById = async (userId) => {
   try {
     const response = await axios.get(
-      `${process.env.REACT_APP_API_URL}/user/${userId}`
+      `${process.env.REACT_APP_API_URL}/user/api/user/${userId}`
     );
 
-    return response;
+    return response?.data;
   } catch (error) {
     console.error("Error fetching data:", error);
   }

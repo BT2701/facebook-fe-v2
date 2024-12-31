@@ -43,12 +43,12 @@ export const Option = () => {
   const handleLogout = async () => {
     try {
       // Gọi API để logout
-      await axios.post("http://localhost:8001/api/user/logout", null, {
+      await axios.put("http://localhost:8000/user/api/logout", currentUser.email, {
         withCredentials: true,
       });
 
       // Xóa session ở phía frontend
-      sessionStorage.clear();
+      localStorage.clear();
 
       // Chuyển hướng người dùng về trang login
       nav("/login");

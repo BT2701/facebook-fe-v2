@@ -2,6 +2,7 @@ import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody,
 import { RiEdit2Fill } from 'react-icons/ri';
 import { useState, useEffect } from "react";
 import axios from 'axios';
+import { current } from '@reduxjs/toolkit';
 
 export const EditProfile = ({ m, w, title, userData, setUser }) => {
 
@@ -10,7 +11,7 @@ export const EditProfile = ({ m, w, title, userData, setUser }) => {
 
     const [formData, setFormData] = useState({
         name: '',
-        birth: '',
+        birthday: '',
         email: '',
         phone: '',
         gender: '',
@@ -18,15 +19,14 @@ export const EditProfile = ({ m, w, title, userData, setUser }) => {
         relationship: '',
         education: '',
         social: '',
-        password: '',
-        confirmPassword: ''
+        description: ''
     });
 
     useEffect(() => {
         if (userData) {
             setFormData({
                 name: userData.name || '',
-                birth: userData.birth ? userData.birth.split('T')[0] : '', 
+                birthday: userData.birthday ? userData.birthday.split('T')[0] : '',
                 email: userData.email || '',
                 phone: userData.phone || '',
                 gender: userData.gender || '',
@@ -34,8 +34,7 @@ export const EditProfile = ({ m, w, title, userData, setUser }) => {
                 relationship: userData.relationship || '',
                 education: userData.education || '',
                 social: userData.social || '',
-                password: '',
-                confirmPassword: ''
+                description: userData.description || ''
             });
         }
     }, [userData]);
@@ -45,10 +44,10 @@ export const EditProfile = ({ m, w, title, userData, setUser }) => {
         setFormData({ ...formData, [name]: value });
     };
 
-    
+
     const handleSave = async () => {
         // Kiểm tra các trường bắt buộc trong phần Personal Information
-        if (!formData.name || !formData.birth || !formData.email || !formData.phone || !formData.gender || !formData.address) {
+        if (!formData.name || !formData.birthday || !formData.email || !formData.phone || !formData.gender || !formData.address) {
             toast({
                 title: "Missing information",
                 description: "All fields in 'Personal Information' are required.",
@@ -59,33 +58,41 @@ export const EditProfile = ({ m, w, title, userData, setUser }) => {
             });
             return;
         }
-    
-        if (formData.password && formData.password !== formData.confirmPassword) {
-            toast({
-                title: "Password mismatch",
-                description: "Password and confirm password must match.",
-                status: "error",
-                duration: 3000,
-                isClosable: true,
-                position: "top"
-            });
-            return;
+        if (formData.email) {
+            const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+            if (!emailPattern.test(formData.email)) {
+                toast({
+                    title: "Invalid email",
+                    description: "Please enter a valid email address.",
+                    status: "error",
+                    duration: 3000,
+                    isClosable: true,
+                    position: "top"
+                });
+                return;
+            }
+            const existUser = await axios.get(`${process.env.REACT_APP_API_URL}/user/api/user?email=${formData.email}`);
+            if (existUser?.data && existUser?.data.data.id !== userData.id) {
+                toast({
+                    title: "Email already exists",
+                    description: "This email address is already in use. Please enter a different email address.",
+                    status: "error",
+                    duration: 3000,
+                    isClosable: true,
+                    position: "top"
+                });
+                return;
+            }
         }
-    
-        const payload = { ...formData };
-    
-        if (payload.password === "") {
-            delete payload.password;
-            delete payload.confirmPassword;
-        }
-    
-        console.log(payload);
-    
+
         try {
-            const response = await axios.put(`${process.env.REACT_APP_API_URL}/user/${userData.id}`, payload);
-            console.log(response?.data); 
+            const response = await axios.put(`${process.env.REACT_APP_API_URL}/user/api/edit`, {
+                email: formData.email,
+                user: formData,
+            });
+            console.log(response?.data);
             setUser(response?.data);
-    
+
             toast({
                 title: "Profile updated.",
                 description: "Your profile has been successfully updated.",
@@ -105,10 +112,10 @@ export const EditProfile = ({ m, w, title, userData, setUser }) => {
                 position: "top"
             });
         }
-    
+
         onClose();
     };
-    
+
 
     return (
         <>
@@ -125,11 +132,11 @@ export const EditProfile = ({ m, w, title, userData, setUser }) => {
                             <Heading fontSize={20}>Personal Information</Heading>
                             <VStack mt={3} spacing={3}>
                                 <Input name='name' value={formData.name} onChange={handleChange} placeholder='Name' />
-                                <Input name='birth' value={formData.birth} onChange={handleChange} placeholder='Birthdate' type="date" />
+                                <Input name='birth' value={formData.birthday} onChange={handleChange} placeholder='Birthdate' type="date" />
                                 <Input name='email' value={formData.email} onChange={handleChange} placeholder='Email' type="email" />
                                 <Input name='phone' value={formData.phone} onChange={handleChange} placeholder='Phone' type="tel" />
                                 <Input name='address' value={formData.address} onChange={handleChange} placeholder='Address' />
-                                
+
                                 <Select name='gender' value={formData.gender} onChange={handleChange} placeholder='Gender Status'>
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
@@ -144,7 +151,7 @@ export const EditProfile = ({ m, w, title, userData, setUser }) => {
                             <Heading fontSize={20}>Customise your Intro</Heading>
                             <VStack mt={3} spacing={3}>
                                 <Input name='education' value={formData.education} onChange={handleChange} placeholder='Education' />
-                                
+
                                 <Select name='relationship' value={formData.relationship} onChange={handleChange} placeholder='Relationship Status'>
                                     <option value="Single">Single</option>
                                     <option value="In a relationship">In a relationship</option>
@@ -152,6 +159,7 @@ export const EditProfile = ({ m, w, title, userData, setUser }) => {
                                 </Select>
 
                                 <Input name='social' value={formData.social} onChange={handleChange} placeholder='Social Link' />
+                                <Input name='description' value={formData.description} onChange={handleChange} placeholder='Description' />
                             </VStack>
                         </Box>
 
