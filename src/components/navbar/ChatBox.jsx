@@ -48,7 +48,7 @@ export default function ChatBox({ onCallAudio, onCallVideo }) {
   const getMessages = async (cursor) => {
     if (isLoading) {
       const response = await getMessagesByUserIdAndContactId(
-        currentUser,
+        currentUser.id,
         contactId,
         cursor
       );
@@ -60,7 +60,7 @@ export default function ChatBox({ onCallAudio, onCallVideo }) {
 
         for (const msg of response?.data.messages) {
           // if sender is current user
-          if (msg.sender === currentUser) {
+          if (msg.sender === currentUser.id) {
             tempMsg.push({
               id: msg.id,
               message: { text: msg.content },
@@ -112,7 +112,7 @@ export default function ChatBox({ onCallAudio, onCallVideo }) {
       try {
         // Add message to database
         const response = await postMsg({
-          Sender: currentUser,
+          Sender: currentUser.id,
           Receiver: contactId,
           CreatedAt: new Date().toISOString().split(".")[0],
           Content: msgInput,
@@ -134,7 +134,7 @@ export default function ChatBox({ onCallAudio, onCallVideo }) {
             await chatConnRef.current.invoke(
               "SendMessage",
               response?.data.id,
-              currentUser,
+              currentUser.id,
               contactId,
               msgInput
             );

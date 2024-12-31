@@ -130,7 +130,7 @@ export const Post = () => {
         try {
             const response = await getUserById(userId);
             if (response && response?.data) {
-                post.profilePic = response?.data.avt;
+                post.profilePic = response?.data.avatar;
                 post.profileName = response?.data.name;
             } else {
                 console.error('Lỗi: response hoặc response.data không xác định');
@@ -154,7 +154,7 @@ export const Post = () => {
         try {
             const response = await getUserById(userId);
             if (response && response?.data) {
-                comment.profilePic = response?.data.avt;
+                comment.profilePic = response?.data.avatar;
                 comment.profileName = response?.data.name;
             } else {
                 console.error('Lỗi: response hoặc response.data không xác định');

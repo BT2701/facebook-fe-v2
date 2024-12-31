@@ -14,7 +14,7 @@ export const Navbar = () => {
 
   const initializeConnection = async () => {
     // Connect to chathub
-    await connectChat(currentUser);
+    await connectChat(currentUser.id);
   };
 
   useEffect(() => {

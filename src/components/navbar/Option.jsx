@@ -59,7 +59,7 @@ export const Option = () => {
 
   useEffect(() => {
     const getUser = async () => {
-        const userId = currentUser;
+        const userId = currentUser.id;
 
         if (userId && userId !== -1) {
             const response = await getUserById(userId);
@@ -88,7 +88,7 @@ export const Option = () => {
               name={user?.name || ""}
               ml={-1}
               mr={2}
-              src={user?.avt || ""}
+              src={user?.avatar || ""}
             />
             <TagLabel>{user?.name || ""}</TagLabel>
           </Tag>
@@ -117,7 +117,7 @@ export const Option = () => {
                   nav("/profile");
                 }} 
                  
-                icon={<Avatar src={user?.avt || ""} name={user?.name || ""} size="lg" />}
+                icon={<Avatar src={user?.avatar || ""} name={user?.name || ""} size="lg" />}
               >
                 <Text fontSize={20} fontWeight={500}>
                   {user?.name || ""}

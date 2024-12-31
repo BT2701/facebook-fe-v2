@@ -24,11 +24,11 @@ export const StoryReel = () => {
         const fetchData = async () => {
             try {
                 // Lấy danh sách bạn bè
-                const friendsResponse = await getFriendsByUserId(currentUser);
+                const friendsResponse = await getFriendsByUserId(currentUser.id);
                 const friendsData = friendsResponse?.data; // Đây là mảng các đối tượng user
                 setFriendList(friendsData);
                 // Tạo danh sách userId của currentUser và bạn bè
-                const allUserIds = [currentUser, ...friendsData.map(friend => friend.id)];
+                const allUserIds = [currentUser.id, ...friendsData.map(friend => friend.id)];
                 console.log('allUserIds:', allUserIds);
                 // Gọi API lấy stories của từng userId
                 const storyPromises = allUserIds.map(userId => fetchDataForStory(userId));
@@ -46,8 +46,8 @@ export const StoryReel = () => {
                 }, {});
     
                 // Thêm thông tin của currentUser vào map
-                const currentUserResponse = await getUserById(currentUser);
-                usersMap[currentUser] = currentUserResponse?.data;
+                const currentUserResponse = await getUserById(currentUser.id);
+                usersMap[currentUser.id] = currentUserResponse?.data;
     
                 // Cập nhật state
                 setStories(allStories);
@@ -128,7 +128,7 @@ export const StoryReel = () => {
 
     const handleConfirm = () => {
         if (selectedFile) {
-            handleCreateStory(currentUser, selectedFile);
+            handleCreateStory(currentUser.id, selectedFile);
         }
 
     };
@@ -147,7 +147,7 @@ export const StoryReel = () => {
                     <Story
                         key={index}
                         image={story?.image}
-                        profileSrc={user?.avt}
+                        profileSrc={user?.avatar}
                         userName={user?.name}
                     />
                 );

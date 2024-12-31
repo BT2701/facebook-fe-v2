@@ -47,18 +47,18 @@ export default function ChatMenu() {
   };
 
   const getDataForChatMenu = async () => {
-    const response = await getMessagesByUserId(currentUser);
+    const response = await getMessagesByUserId(currentUser.id);
 
     if (response && response?.data) {
       const messageArray = [];
       let userId, content;
       for (const msg of response?.data) {
-        if (msg.sender === currentUser && msg.receiver) {
+        if (msg.sender === currentUser.id && msg.receiver) {
           // User id not currentUser
           userId = msg.receiver;
           // Content of the message
           content = `You: ${msg.content}`;
-        } else if (msg.receiver === currentUser && msg.sender) {
+        } else if (msg.receiver === currentUser.id && msg.sender) {
           // User id not currentUser
           userId = msg.sender;
           // Content of the message
@@ -74,7 +74,7 @@ export default function ChatMenu() {
             id: msg.id,
             contactId: userId,
             contactName: userData?.data.name,
-            avatar: userData?.data.avt,
+            avatar: userData?.data.avatar,
             isOnline: userData?.data.isOnline,
             lastActive: userData?.data.lastActive,
             content,

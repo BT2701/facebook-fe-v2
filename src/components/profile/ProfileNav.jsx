@@ -20,7 +20,7 @@ const NewButton = ({ title, path }) => {
 };
 
 export const ProfileNav = () => {
-    const { currentUser } = useUser();
+    const { currentUser,uploadImage, setUploadImage } = useUser();
     const [user, setUser] = useState(null);
     const [friendStatus, setFriendStatus] = useState("notFriend"); // 'friend', 'notFriend', 'requestFriend'
     const navigate = useNavigate();
@@ -51,7 +51,8 @@ export const ProfileNav = () => {
         };
 
         getUser();
-    }, [currentUser, location.search, navigate]);
+        setUploadImage(0);
+    }, [currentUser, location.search, navigate, uploadImage]);
 
     useEffect(() => {
         const handleRequestAndFriend = async () => {
@@ -122,6 +123,7 @@ export const ProfileNav = () => {
                                         user={user}
                                         setMyPic={setMyPic}
                                         myPic={myPic}
+                                        setUploadImage={setUploadImage}
                                     />
                                 ) : (
                                     <>

@@ -22,7 +22,7 @@ export default function FriendList() {
 
   // Fetch current user's friends
   const fetchCurrentUserFriends = async () => {
-    const response = await getFriendsByUserId(currentUser);
+    const response = await getFriendsByUserId(currentUser.id);
 
     const friendList = [];
 
@@ -32,7 +32,7 @@ export default function FriendList() {
           friendList.push({
             id: friend.id,
             name: friend.name,
-            avatar: friend.avt,
+            avatar: friend.avatar,
             isOnline: friend.isOnline,
             lastActive: friend.lastActive,
           });

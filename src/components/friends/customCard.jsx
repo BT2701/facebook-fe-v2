@@ -19,7 +19,7 @@ const CustomCard = ({ data }) => {
     const { currentUser } = useUser();
     const { createNotification, deleteNotification } = useNotification();
     const nav = useNavigate();
-    const userId = currentUser; // Lấy ID người dùng
+    const userId = currentUser.id; // Lấy ID người dùng
     // Cập nhật hasData khi dữ liệu thay đổi
     useEffect(() => {
         console.log("Data in CustomCard:", data); // In ra dữ liệu nhận được

@@ -118,14 +118,14 @@ export default function ChatManage() {
     if (stream && isWaiting) {
       const callUser = async (callToUserId) => {
         // Get user data by user id
-        const userData = await getUserById(currentUser);
+        const userData = await getUserById(currentUser.id);
 
         let userName = "",
           userAvatar = "";
         //   Get current user name and avatar
         if (userData && userData?.data) {
           userName = userData?.data.name;
-          userAvatar = userData?.data.avt;
+          userAvatar = userData?.data.avatar;
         }
 
         const peer = new Peer({
@@ -138,7 +138,7 @@ export default function ChatManage() {
             if (chatConnRef.current) {
               await chatConnRef.current.invoke(
                 "CallUser",
-                currentUser,
+                currentUser.id,
                 userName,
                 userAvatar,
                 callToUserId,

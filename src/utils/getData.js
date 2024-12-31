@@ -107,7 +107,7 @@ export const getFriendsByUserId = async (userId) => {
 };
 
 // notification
-export const fetchDataForNotification = async ({ currentUser }) => {
+export const fetchDataForNotification = async ( currentUser ) => {
   try {
     const response = await axios.get(
       `${process.env.REACT_APP_API_URL}/notification/receiver/` + currentUser

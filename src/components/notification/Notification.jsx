@@ -79,7 +79,7 @@ const Notifications = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await fetchDataForNotification({ currentUser });
+            const response = await fetchDataForNotification( currentUser.id );
             if (response) {
                 setNotificationList(response?.data);
                 const unreadCount = response?.data.filter(item => item.is_read === 0).length;
@@ -113,7 +113,7 @@ const Notifications = () => {
 
     const markAllAsRead = async () => {
         try {
-            await markAllAsReadNotification(currentUser);
+            await markAllAsReadNotification(currentUser.id);
             setReadNotification(1);
         } catch (error) {
             console.error('Error marking all as read:', error);
@@ -195,7 +195,7 @@ const Notifications = () => {
                                 notificationList.map((notification) => (
                                     <NotificationItem
                                         key={notification.id}
-                                        avatarSrc={userNames[notification.user]?.avt}
+                                        avatarSrc={userNames[notification.user]?.avatar}
                                         title={userNames[notification.user]?.name || 'Loading...'}
                                         message={notification.content}
                                         time={formatTimeFromDatabase(notification.timeline)}
@@ -212,7 +212,7 @@ const Notifications = () => {
                 feedId={feedId}
                 open={openDialog}
                 onClose={() => setOpenDialog(false)}
-                currentUser={currentUser}
+                currentUser={currentUser.id}
                 user={userId}
                 action={actionId}
             />

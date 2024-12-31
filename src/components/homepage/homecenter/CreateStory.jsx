@@ -9,7 +9,7 @@ const CreateStory = () => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const response = await getUserById(currentUser);
+                const response = await getUserById(currentUser.id);
                 setUser(response?.data);
             }
             catch (error) {
@@ -37,7 +37,7 @@ const CreateStory = () => {
                 alt=""
                 className="x5yr21d xl1xv1r xh8yej3"
                 referrerPolicy="origin-when-cross-origin"
-                src={user?.avt || `${process.env.REACT_APP_DEFAULT_USER_IMG}`}
+                src={user?.avatar || `${process.env.REACT_APP_DEFAULT_USER_IMG}`}
             />
             </div>
             <div></div>

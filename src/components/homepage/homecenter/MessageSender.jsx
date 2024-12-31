@@ -20,7 +20,7 @@ export const MessageSender = ({ setPosts, currentUserId, setLastPostId, updatePo
   return (
     <div className="messageSender">
       <div className="messageSender__top">
-        <Avatar mr={4} src={user?.avt || `${process.env.REACT_APP_DEFAULT_USER_IMG}`} />
+        <Avatar mr={4} src={user?.avatar || `${process.env.REACT_APP_DEFAULT_USER_IMG}`} />
         <Button
           w={"80%"}
           rounded={"full"}

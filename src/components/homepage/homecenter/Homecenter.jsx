@@ -21,7 +21,7 @@ export const Homecenter = () => {
     try {
       const response = await getUserById(userId);
       if (response && response?.data) {
-        post.profilePic = response?.data.avt;
+        post.profilePic = response?.data.avatar;
         post.profileName = response?.data.name;
       } else {
         console.error('Error: response or response.data is undefined');
@@ -51,7 +51,7 @@ export const Homecenter = () => {
     try {
       const response = await getUserById(userId);
       if (response && response?.data) {
-        comment.profilePic = response?.data.avt;
+        comment.profilePic = response?.data.avatar;
         comment.profileName = response?.data.name;
       } else {
         console.error('Error: response or response.data is undefined');
@@ -75,15 +75,15 @@ export const Homecenter = () => {
     setLoading(true);
     try {
       const url = lastPostId
-        ? `${process.env.REACT_APP_API_URL}/post/${currentUser}?lastPostId=${lastPostId}&limit=${postsPerPage}`
-        : `${process.env.REACT_APP_API_URL}/post/${currentUser}?limit=${postsPerPage}`;
+        ? `${process.env.REACT_APP_API_URL}/post/${currentUser.id}?lastPostId=${lastPostId}&limit=${postsPerPage}`
+        : `${process.env.REACT_APP_API_URL}/post/${currentUser.id}?limit=${postsPerPage}`;
       const response = await axios.get(url);
       if (response?.data?.$values?.length) {
         const fetchedPosts = [];
 
         for (const post of response?.data.$values) {
-          const resGetReq3 = await getFriendByUserId1AndUserId2(currentUser, post.userId);
-          if (resGetReq3 !== null || post.userId === currentUser) {
+          const resGetReq3 = await getFriendByUserId1AndUserId2(currentUser.id, post.userId);
+          if (resGetReq3 !== null || post.userId === currentUser.id) {
             // Nếu là bạn bè, cập nhật thông tin bài viết
             const updatedPost = await updatePostInfor(post.userId, post);
             fetchedPosts.push(updatedPost);
@@ -146,7 +146,7 @@ export const Homecenter = () => {
     <div className="Homecenter">
       <StoryReel />
       <Box mb={"7px"} w={"143%"}>
-        <MessageSender wid={"100%"} setPosts={setPosts} currentUserId={currentUser} setLastPostId={setLastPostId} updatePostInfor={updatePostInfor} />
+        <MessageSender wid={"100%"} setPosts={setPosts} currentUserId={currentUser.id} setLastPostId={setLastPostId} updatePostInfor={updatePostInfor} />
       </Box>
 
 
@@ -163,7 +163,7 @@ export const Homecenter = () => {
               likedByCurrentUser={post.likedByCurrentUser}
               likeCount={post.reactions.$values.length}
               commentList={post.comments.$values}
-              currentUserId={currentUser}
+              currentUserId={currentUser.id}
               userCreatePost={post.userId}
               setPosts={setPosts}
               posts={posts}

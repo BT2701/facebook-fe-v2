@@ -3,12 +3,13 @@ import { RiEdit2Fill } from 'react-icons/ri';
 import { useRef, useState } from "react";
 import axios from 'axios';
 
-export const EditProfilePic = ({ m, w, title, setMyPic, myPic, user }) => {
+export const EditProfilePic = ({ m, w, title, setMyPic, myPic, user, setUploadImage }) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const profile = useRef();
     const [preview, setPreview] = useState(myPic);
     const [file, setFile] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [avtUrl, setAvtUrl] = useState("");
     const toast = useToast();
 
     const handleFileChange = (event) => {
@@ -38,29 +39,36 @@ export const EditProfilePic = ({ m, w, title, setMyPic, myPic, user }) => {
             return;
         }
 
-        setIsLoading(true); 
+        setIsLoading(true);
 
         try {
             const formData = new FormData();
             formData.append("imageFile", file);
+            formData.append("user_id", user.id);
+            formData.append("post_id", "");
+            formData.append("story_id", "");
 
-            const uploadAvtResponse = await axios.post(`${process.env.REACT_APP_API_URL}/post/uploadImage`, formData);
-            const updateResponse = await axios.put(`${process.env.REACT_APP_API_URL}/user/upload?userId=${user.id}`, {
-                "imageUrl": uploadAvtResponse?.data.imageUrl
+            console.log("formData: ", formData.get("imageFile").name);
+            setAvtUrl(`${process.env.REACT_APP_API_URL}/media${formData.get("imageFile").name}`);
+            const uploadAvtResponse = await axios.post(`${process.env.REACT_APP_API_URL}/media/image`, formData);
+            const updateResponse = await axios.put(`${process.env.REACT_APP_API_URL}/user/api/avatar`, {
+                "email": user.email,
+                "avatar": `${process.env.REACT_APP_API_URL}/media/uploads/${formData.get("imageFile").name}`
             });
-
+            console.log("uploadAvtResponse: ", uploadAvtResponse?.data.data.url);
             setFile(null);
-            setMyPic(uploadAvtResponse?.data.imageUrl);
-            setPreview(uploadAvtResponse?.data.imageUrl);
+            setMyPic(uploadAvtResponse?.data.data.url);
+            setPreview(uploadAvtResponse?.data.data.url);
 
             toast({
-                title: updateResponse?.data,
+                title: updateResponse?.data.data.message,
                 description: "Your avatar has been successfully updated.",
                 status: "success",
                 duration: 3000,
                 isClosable: true,
                 position: "top"
             });
+            setUploadImage(1);
         } catch (error) {
             console.error("Error uploading avatar:", error);
             toast({
@@ -72,7 +80,7 @@ export const EditProfilePic = ({ m, w, title, setMyPic, myPic, user }) => {
                 position: "top"
             });
         } finally {
-            setIsLoading(false); 
+            setIsLoading(false);
             onClose();
         }
     };
@@ -95,11 +103,11 @@ export const EditProfilePic = ({ m, w, title, setMyPic, myPic, user }) => {
                                     <Spacer />
                                     <input ref={profile} type='file' accept="image/png, image/jpeg" name='mypic' onChange={handleFileChange} disabled={isLoading} />
                                     <Spacer />
-                                    <Button 
-                                        type='button' 
-                                        onClick={handleUpdateAvt} 
-                                        isLoading={isLoading} 
-                                        loadingText="Updating" 
+                                    <Button
+                                        type='button'
+                                        onClick={handleUpdateAvt}
+                                        isLoading={isLoading}
+                                        loadingText="Updating"
                                         disabled={isLoading}
                                     >
                                         Update
@@ -107,20 +115,20 @@ export const EditProfilePic = ({ m, w, title, setMyPic, myPic, user }) => {
                                 </Flex>
                             </div>
                             <Flex justify={'center'} m={4}>
-                                <Box w={'160px'} 
-                                    h={'160px'} 
-                                    overflow={'hidden'} 
+                                <Box w={'160px'}
+                                    h={'160px'}
+                                    overflow={'hidden'}
                                     rounded={'full'}
-                                    display="flex" 
-                                    alignItems="center" 
+                                    display="flex"
+                                    alignItems="center"
                                     justifyContent="center"
                                 >
                                     {isLoading ? (
                                         <Spinner size="xl" />
                                     ) : (
-                                        <Image src={preview !== "" ? preview : "https://archive.org/download/placeholder-image/placeholder-image.jpg"} 
-                                            objectFit="cover" 
-                                            w="100%" 
+                                        <Image src={preview !== "" ? preview : "https://archive.org/download/placeholder-image/placeholder-image.jpg"}
+                                            objectFit="cover"
+                                            w="100%"
                                             h="100%"
                                         />
                                     )}
@@ -135,7 +143,7 @@ export const EditProfilePic = ({ m, w, title, setMyPic, myPic, user }) => {
                                 <Button colorScheme='blue' mr={3} onClick={onClose}>
                                     Close
                                 </Button>
-                            ) 
+                            )
                         }
                     </ModalFooter>
                 </ModalContent>

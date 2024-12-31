@@ -184,13 +184,13 @@ export const Friends = () => {
 
                     <Heading fontSize={23}>Friends</Heading>
                     {
-                        friends.filter(fr => fr?.id !== currentUser).length === 0 ? (
+                        friends.filter(fr => fr?.id !== currentUser.id).length === 0 ? (
                             <NewText /> 
                         ) : (
                             <SimpleGrid columns={2} spacing={10} mt={8}>
                                 {
-                                    friends.filter(fr => fr?.id !== currentUser).map((f) => (
-                                        <FriendBox currentUserId={currentUser} setIsUpdateFriends={setIsUpdateFriends} friendId={f?.id} key={f?.id} name={f?.name} src={f?.avt  || "https://archive.org/download/placeholder-image/placeholder-image.jpg"} />
+                                    friends.filter(fr => fr?.id !== currentUser.id).map((f) => (
+                                        <FriendBox currentUserId={currentUser.id} setIsUpdateFriends={setIsUpdateFriends} friendId={f?.id} key={f?.id} name={f?.name} src={f?.avatar  || "https://archive.org/download/placeholder-image/placeholder-image.jpg"} />
                                     ))
                                 }
                             </SimpleGrid>

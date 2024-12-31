@@ -19,7 +19,7 @@ const PostRedirect = ({ feedId, open, onClose, currentUser, user, action }) => {
         try {
             const response = await getUserById(userId);
             if (response && response?.data) {
-                post.profilePic = response?.data.avt;
+                post.profilePic = response?.data.avatar;
                 post.profileName = response?.data.name;
             } else {
                 console.error('Lỗi: response hoặc response.data không xác định');
@@ -43,7 +43,7 @@ const PostRedirect = ({ feedId, open, onClose, currentUser, user, action }) => {
         try {
             const response = await getUserById(userId);
             if (response && response?.data) {
-                comment.profilePic = response?.data.avt;
+                comment.profilePic = response?.data.avatar;
                 comment.profileName = response?.data.name;
             } else {
                 console.error('Lỗi: response hoặc response.data không xác định');
@@ -69,7 +69,7 @@ const PostRedirect = ({ feedId, open, onClose, currentUser, user, action }) => {
             setErrorMessage(null); // Reset error message on new fetch
 
             try {
-                const response = await fetchDataForPostId(feedId, currentUser);
+                const response = await fetchDataForPostId(feedId, currentUser.id);
                 const data = await response?.data;
                 if (data) {
                     const p = await updatePostInfo(data.userId, data);
@@ -77,20 +77,20 @@ const PostRedirect = ({ feedId, open, onClose, currentUser, user, action }) => {
                 } else {
                     setErrorMessage('Post does not exist');
                     if (action === 5) {
-                        deleteNotification(currentUser, user, feedId, action);
+                        deleteNotification(currentUser.id, user, feedId, action);
                     }
                     else {
-                        deleteNotification(user, currentUser, feedId, action);
+                        deleteNotification(user, currentUser.id, feedId, action);
                     }
                 }
             } catch (error) {
                 console.error('Lỗi khi lấy dữ liệu:', error);
                 setErrorMessage('An error occurred while loading the post');
                 if (action === 5) {
-                    deleteNotification(currentUser, user, feedId, action);
+                    deleteNotification(currentUser.id, user, feedId, action);
                 }
                 else {
-                    deleteNotification(user, currentUser, feedId, action);
+                    deleteNotification(user, currentUser.id, feedId, action);
                 }            } finally {
                 setLoading(false);
             }
@@ -139,7 +139,7 @@ const PostRedirect = ({ feedId, open, onClose, currentUser, user, action }) => {
                         likedByCurrentUser={post.likedByCurrentUser}
                         likeCount={post.reactions?.$values.length || 0}
                         commentList={post.comments?.$values || []}
-                        currentUserId={currentUser}
+                        currentUserId={currentUser.id}
                         userCreatePost={post.userId}
                         setPosts={setPosts}
                         posts={posts}

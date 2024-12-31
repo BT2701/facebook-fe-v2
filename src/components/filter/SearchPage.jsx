@@ -89,7 +89,7 @@ function SearchPage() {
 
     const fetchPostsData = async (keywords, offset) => {
         try {
-            const postResponse = await axios.get(`${process.env.REACT_APP_API_URL}/post/search?content=${keywords}&limit=${limitPost}&offset=${offset}&currentUserId=${currentUser}`);
+            const postResponse = await axios.get(`${process.env.REACT_APP_API_URL}/post/search?content=${keywords}&limit=${limitPost}&offset=${offset}&currentUserId=${currentUser.id}`);
             const postData = await postResponse?.data;
 
             if (postData && Array.isArray(postData?.$values)) {
@@ -135,7 +135,7 @@ function SearchPage() {
                 // Lấy thông tin trạng thái bạn bè cho mỗi người dùng
                 const usersWithStatus = await Promise.all(
                     userData.map(async (user) => {
-                        const friendStatus = await fetchFriendStatus(currentUser, user.id); // Giả sử bạn có hàm fetchFriendStatus
+                        const friendStatus = await fetchFriendStatus(currentUser.id, user.id); // Giả sử bạn có hàm fetchFriendStatus
                         return { ...user, friendStatus };
                     })
                 );
@@ -185,7 +185,7 @@ function SearchPage() {
         try {
             const response = await getUserById(userId);
             if (response && response?.data) {
-                post.profilePic = response?.data.avt;
+                post.profilePic = response?.data.avatar;
                 post.profileName = response?.data.name;
             } else {
                 console.error('Lỗi: response hoặc response.data không xác định');
@@ -209,8 +209,8 @@ function SearchPage() {
         try {
             const response = await getUserById(userId);
             if (response && response?.data) {
-                comment.profilePic = response?.data.avt;
-                comment.profileName = response?.data.name;
+                comment.profilePic = response?.data.avatar;
+                comment.profileName = response?.data.data.name;
             } else {
                 console.error('Lỗi: response hoặc response.data không xác định');
             }
@@ -246,7 +246,7 @@ function SearchPage() {
                             </div>
                         ) : (
                             <div className="search-content-user">
-                                {users?.filter((u) => u?.id !== currentUser).map((user) => (
+                                {users?.filter((u) => u?.id !== currentUser.id).map((user) => (
                                     <div key={user.id} className="search-content-user-box">
                                         <Flex alignItems={"center"}>
                                             <Box
@@ -259,7 +259,7 @@ function SearchPage() {
                                                 alignItems="center"
                                                 justifyContent="center"
                                             >
-                                                <Image src={user?.avt} alt={user?.name} objectFit="cover" w="100%" h="100%" />
+                                                <Image src={user?.avatar} alt={user?.name} objectFit="cover" w="100%" h="100%" />
                                             </Box>
                                             <div className="search-content-user-box-mid">
                                                 <div style={{ marginLeft: "0.5em" }} className="search-content-user-box-mid-name">
@@ -269,7 +269,7 @@ function SearchPage() {
                                         </Flex>
                                         <>
                                             {user.friendStatus === "notFriend" && (
-                                                <Button key={user.id} colorScheme="blue" onClick={() => handleSendRequestv2(currentUser, user.id, (status) => updateUserStatus(user.id, status))}>
+                                                <Button key={user.id} colorScheme="blue" onClick={() => handleSendRequestv2(currentUser.id, user.id, (status) => updateUserStatus(user.id, status))}>
                                                     Add friend
                                                 </Button>
                                             )}
@@ -298,7 +298,7 @@ function SearchPage() {
                                                                     <Button ref={cancelRef} onClick={onClose}>
                                                                         Cancel
                                                                     </Button>
-                                                                    <Button colorScheme="red" onClick={() => handleRemoveFriend(currentUser, idToRemove, (status) => updateUserStatus(idToRemove, status), onClose)} ml={3}>
+                                                                    <Button colorScheme="red" onClick={() => handleRemoveFriend(currentUser.id, idToRemove, (status) => updateUserStatus(idToRemove, status), onClose)} ml={3}>
                                                                         Remove
                                                                     </Button>
                                                                 </AlertDialogFooter>
@@ -332,7 +332,7 @@ function SearchPage() {
                                                                     <Button ref={cancelRef} onClick={onClose}>
                                                                         Cancel
                                                                     </Button>
-                                                                    <Button colorScheme="red" onClick={() => handleRemoveRequestv2(currentUser, idToRemove, (status) => updateUserStatus(idToRemove, status), onClose)} ml={3}>
+                                                                    <Button colorScheme="red" onClick={() => handleRemoveRequestv2(currentUser.id, idToRemove, (status) => updateUserStatus(idToRemove, status), onClose)} ml={3}>
                                                                         Remove
                                                                     </Button>
                                                                 </AlertDialogFooter>
@@ -343,10 +343,10 @@ function SearchPage() {
                                             )}
                                             {user.friendStatus === "requestFriend" && (
                                                 <div key={user.id}>
-                                                    <Button colorScheme="green" onClick={() => handleAcceptRequestv2(currentUser, user.id, (status) => updateUserStatus(user.id, status))}>
+                                                    <Button colorScheme="green" onClick={() => handleAcceptRequestv2(currentUser.id, user.id, (status) => updateUserStatus(user.id, status))}>
                                                         Accept
                                                     </Button>
-                                                    <Button colorScheme="red" onClick={() => handleCancelRequestv2(currentUser, user.id, (status) => updateUserStatus(user.id, status))} ml={2}>
+                                                    <Button colorScheme="red" onClick={() => handleCancelRequestv2(currentUser.id, user.id, (status) => updateUserStatus(user.id, status))} ml={2}>
                                                         Refuse
                                                     </Button>
                                                 </div>
@@ -384,7 +384,7 @@ function SearchPage() {
                                         likedByCurrentUser={post.likedByCurrentUser}
                                         likeCount={post.reactions.$values.length}
                                         commentList={post.comments.$values}
-                                        currentUserId={currentUser}
+                                        currentUserId={currentUser.id}
                                         userCreatePost={post.userId}
                                         setPosts={setPosts}
                                         posts={posts}

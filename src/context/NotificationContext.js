@@ -36,7 +36,7 @@ export const NotificationProvider = ({ children }) => {
 
     const deleteNotification = (user = null, receiver, post = null, action) => {
         const postId = post || 0;
-        const user1 = user || currentUser;
+        const user1 = user || currentUser.id;
         console.log('Deleting notification:', user1, receiver, postId, action);
         axios.delete(`${process.env.REACT_APP_API_URL}/notification/delete/${user1}/${receiver}/${postId}/${action}`)
             .then(response => {
@@ -56,13 +56,13 @@ export const NotificationProvider = ({ children }) => {
         if (post === null) {
             post = 0;
         }
-        if (receiverId === currentUser) {
+        if (receiverId === currentUser.id) {
             return;
         }
         const timezoneOffset = 7 * 60; // GMT+7
         const vietnamTime = new Date(new Date().getTime() + timezoneOffset * 60 * 1000).toISOString();
         const notification = {
-            user: currentUser,
+            user: currentUser.id,
             receiver: receiverId,
             post: post,
             content: contentStr,
