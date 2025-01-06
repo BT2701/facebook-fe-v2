@@ -54,10 +54,10 @@ export const Post = () => {
     const fetchPosts = async () => {
         // if (!hasMore) return;
         try {
-            const response = await axios.get(`http://localhost:8000/post/api/${currentUser.id}/${user?.id}?lastPostId=${lastPostId}&limit=${postsPerPage}`)
+            const response = await axios.get(`http://localhost:8000/post/posts/user/${currentUser.id}`)
             const fetchedPosts = await Promise.all(
-                response?.data.$values.map((post) =>
-                    updatePostInfor(post.userId, post)
+                response?.data.data.posts.map((post) =>
+                    updatePostInfor(post.user_id, post)
                 )
             );
             const uniquePosts = fetchedPosts.filter(
@@ -65,7 +65,7 @@ export const Post = () => {
             );
             setLastPostId(fetchedPosts[fetchedPosts.length - 1].id);
             setPosts((prev) => {
-                const newPrev = prev.filter((p) => p.userId === user.id)
+                const newPrev = prev.filter((p) => p.user_id === user.id)
 
                 return [...newPrev, ...uniquePosts];
             });
@@ -126,9 +126,9 @@ export const Post = () => {
         }).format(date);
     }
 
-    const updatePostInfor = async (userId, post) => {
+    const updatePostInfor = async (user_id, post) => {
         try {
-            const response = await getUserById(userId);
+            const response = await getUserById(user_id);
             if (response && response?.data) {
                 post.profilePic = response?.data.avatar;
                 post.profileName = response?.data.name;
@@ -138,7 +138,7 @@ export const Post = () => {
             if (post.comments.$values.length && Array.isArray(post.comments.$values)) {
                 const updatedComments = await Promise.all(
                     post.comments.$values.map(async (comment) => {
-                        return await updateCommentInfor(comment.userId, comment);
+                        return await updateCommentInfor(comment.user_id, comment);
                     })
                 );
                 post.comments.$value = updatedComments;
@@ -150,9 +150,9 @@ export const Post = () => {
         }
     };
 
-    const updateCommentInfor = async (userId, comment) => {
+    const updateCommentInfor = async (user_id, comment) => {
         try {
-            const response = await getUserById(userId);
+            const response = await getUserById(user_id);
             if (response && response?.data) {
                 comment.profilePic = response?.data.avatar;
                 comment.profileName = response?.data.name;
@@ -222,17 +222,17 @@ export const Post = () => {
                                                 timeStamp={formatTimeFromDatabase(post.timeline)}
                                                 userName={post.profileName}
                                                 postImage={post.image}
-                                                likedByCurrentUser={post.likedByCurrentUser}
-                                                likeCount={post.reactions.$values.length}
-                                                commentList={post.comments.$values}
+                                                // likedByCurrentUser={post.likedByCurrentUser}
+                                                likeCount={post.reactions?.length}
+                                                commentList={post.comments}
                                                 currentUserId={currentUser.id}
-                                                userCreatePost={post.userId}
+                                                userCreatePost={post.user_id}
                                                 setPosts={setPosts}
                                                 posts={posts}
                                                 updateComments={updateCommentsForPost}
                                                 updatePostInfor={updatePostInfor}
                                                 updateCommentInfor={updateCommentInfor}
-                                            // userId={post?.userId}
+                                            // user_id={post?.user_id}
                                             />
                                         </div>
                                     ))

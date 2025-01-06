@@ -50,56 +50,37 @@ export const CreatePost = ({ setPosts, isOpen, onClose, postEditId, postEditCont
 
             const formData = new FormData();
             formData.append("imageFile", typeof (image) === "string" ? null : image);
-            formData.append("contentPost", postContent);
-            formData.append("userId", currentUserId);
-            if (postEditId)
-                formData.append("discriptionActionToImage", discriptionActionToImage);
-            const url = postEditId
-                ? `${process.env.REACT_APP_API_URL}/post/${postEditId}`
-                : `${process.env.REACT_APP_API_URL}/post`;
-            const method = postEditId ? 'put' : 'post';
-            const response = await axios({
-                method,
-                url,
-                data: formData,
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
-            if (response.status === 200) {
-                onClose();
-                setPostContent("");
-                setImage(null);
-                setIsLoading(false);
-                toast({
-                    title: postEditId ? 'Post updated' : 'Post created',
-                    description: postEditId ? 'Your post has been successfully updated.' : 'Your post has been successfully created.',
-                    status: "success",
-                    duration: 3000,
-                    isClosable: true,
+            formData.append("user_id", currentUserId);
+            formData.append("post_id", "");
+            formData.append("story_id", "");
+            console.log("1234567890", currentUserId, postContent, image.name);
+            // formData.append("contentPost", postContent);
+            if (postEditId) {
+
+            }
+            else {
+                // Create new post
+                const createPostResponse = await axios.post(`${process.env.REACT_APP_API_URL}/post/posts`, {
+                    content: postContent,
+                    image: `${process.env.REACT_APP_API_URL}/media/uploads/${image.name}`,
+                    user_id: currentUserId,
                 });
-
-                const postCreated = response?.data;
-                updatePostInfor(postCreated.userId, postCreated)
-                    .then((data) => {
-                        if (postEditId) {
-                            // Update only the edited post in the list
-                            setPosts((prevPosts) =>
-                                prevPosts.map((post) => (post.id === postEditId ? data : post))
-                            );
-                        } else {
-
-                            setPosts((prevPosts) => {
-                                if (prevPosts.length === 0) {
-                                    setLastPostId(data.id);
-                                }
-                                return [data, ...prevPosts];
-                            })
-                        }
-                    })
-                    friendList.forEach(friend => {
-                        if (friend.id !== currentUserId) {
-                            createNotification(friend.id, postCreated.id, 'created a new post', 5);
-                        }
+                setPosts((prevPosts) => [createPostResponse?.data.data.post, ...prevPosts]);
+                formData.append("post_id", createPostResponse?.data.data.post.id);
+                console.log("createPostResponse: ", createPostResponse.data.data);
+                if (createPostResponse?.data.data.post.image) {
+                    const uploadResponse = await axios.post(`${process.env.REACT_APP_API_URL}/media/image`, formData);
+                }
+                if(createPostResponse.status === 200){
+                    setLastPostId(createPostResponse?.data.data.post.id);
+                    toast({
+                        title: "Success",
+                        description: "Post created successfully",
+                        status: "success",
+                        duration: 3000,
+                        isClosable: true,
                     });
+                }
             }
         } catch (error) {
             setIsLoading(false);
