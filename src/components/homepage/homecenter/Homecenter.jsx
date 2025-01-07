@@ -29,14 +29,14 @@ export const Homecenter = () => {
         // post.profilePic = 'https://img-cdn.pixlr.com/image-generator/history/65bb506dcb310754719cf81f/ede935de-1138-4f66-8ed7-44bd16efc709/medium.webp'; // Or some default value
         // post.profileName = 'Anonymous'; // Or some default name
       }
-      if (post.comments.$values.length && Array.isArray(post.comments.$values)) {
-        const updatedComments = await Promise.all(
-          post.comments.$values.map(async (comment) => {
-            return await updateCommentInfor(comment.userId, comment);
-          })
-        );
-        post.comments.$value = updatedComments;
-      }
+      // if (post.comments.$values.length && Array.isArray(post.comments.$values)) {
+      //   const updatedComments = await Promise.all(
+      //     post.comments.$values.map(async (comment) => {
+      //       return await updateCommentInfor(comment.userId, comment);
+      //     })
+      //   );
+        // post.comments.$value = updatedComments;
+      // }
       return post;
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -74,18 +74,16 @@ export const Homecenter = () => {
     // if (loading || !hasMore) return; // Prevent fetch if already loading or no more posts
     setLoading(true);
     try {
-      const url = lastPostId
-        ? `${process.env.REACT_APP_API_URL}/post/${currentUser.id}?lastPostId=${lastPostId}&limit=${postsPerPage}`
-        : `${process.env.REACT_APP_API_URL}/post/${currentUser.id}?limit=${postsPerPage}`;
+      const url = `${process.env.REACT_APP_API_URL}/post/posts`
       const response = await axios.get(url);
-      if (response?.data?.$values?.length) {
+      if (response?.data.data.posts.length) {
         const fetchedPosts = [];
 
-        for (const post of response?.data.$values) {
-          const resGetReq3 = await getFriendByUserId1AndUserId2(currentUser.id, post.userId);
-          if (resGetReq3 !== null || post.userId === currentUser.id) {
+        for (const post of response?.data.data.posts) {
+          const resGetReq3 = await getFriendByUserId1AndUserId2(currentUser.id, post.user_id);
+          if (resGetReq3 !== null || post.user_id === currentUser.id) {
             // Nếu là bạn bè, cập nhật thông tin bài viết
-            const updatedPost = await updatePostInfor(post.userId, post);
+            const updatedPost = await updatePostInfor(post.user_id, post);
             fetchedPosts.push(updatedPost);
           }
         }
@@ -94,7 +92,7 @@ export const Homecenter = () => {
         );
         console.log("day la uni", response?.data);
         console.log("day la fetch", fetchedPosts);
-        setLastPostId(response?.data.$values[response?.data.$values.length - 1].id);
+        setLastPostId(response?.data.data.posts[response?.data.data.posts.length - 1].id);
         setPosts((prevPosts) => [...prevPosts, ...uniquePosts]);
 
         // Check if fewer posts than expected are fetched, indicating no more posts
@@ -155,16 +153,16 @@ export const Homecenter = () => {
           <div key={post.id}>
             <Feed
               postId={post.id}
-              profilePic={post.profilePic}
-              content={post.content}
-              timeStamp={formatTimeFromDatabase(post.timeline)}
-              userName={post.profileName}
-              postImage={post.image}
-              likedByCurrentUser={post.likedByCurrentUser}
-              likeCount={post.reactions.$values.length}
-              commentList={post.comments.$values}
-              currentUserId={currentUser.id}
-              userCreatePost={post.userId}
+              profilePic={post?.profilePic}
+              content={post?.content}
+              timeStamp={formatTimeFromDatabase(post?.timeline)}
+              userName={post?.profileName}
+              postImage={post?.image}
+              likedByCurrentUser={post?.likedByCurrentUser}
+              likeCount={post.reactions?.$values.length}
+              commentList={post.comments?.$values}
+              currentUserId={currentUser?.id}
+              userCreatePost={post?.userId}
               setPosts={setPosts}
               posts={posts}
               updateComments={updateCommentsForPost}
