@@ -94,13 +94,20 @@ export const getMessagesByUserIdAndContactId = async (
 };
 
 // Get friend of current user
-export const getFriendsByUserId = async (userId) => {
+export const getFriendsByUserId = async (userId, currentUserId) => {
   try {
     const response = await axios.get(
-      `${process.env.REACT_APP_API_URL}/friend/user/${userId}`
+      `${process.env.REACT_APP_API_URL}/friend/friends/${userId}/friends`
     );
-
-    return response;
+    const friends = response?.data.data.friends;
+    const friendsData = await Promise.all(friends.map(async (friend) => {
+      if (friend.userID1 === currentUserId) {
+        return (await getUserById(friend.userID2)).data;
+      } else {
+        return (await getUserById(friend.userID1)).data;
+      }
+    }));
+    return friendsData;
   } catch (error) {
     console.error("Error fetching data:", error);
   }
@@ -183,7 +190,7 @@ export const getAllRequests = async (id) => {
 export const getFriendByUserId1AndUserId2 = async (UserId1, UserId2) => {
   try {
     const response = await axios.get(
-      `${process.env.REACT_APP_API_URL}/friend/${UserId1}/${UserId2}`
+      `${process.env.REACT_APP_API_URL}/friend/friends/${UserId1}/${UserId2}`
     );
     return response?.data; // Đảm bảo trả về dữ liệu
   } catch (error) {

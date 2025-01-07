@@ -169,8 +169,9 @@ export const Friends = () => {
     useEffect(() => {
         if(user?.id) {
             const getFriends = async () => {
-                const friendRes = await getFriendsByUserId(user?.id);
-                setFriends(friendRes?.data);
+                const friendRes = await getFriendsByUserId(user?.id, currentUser.id);
+                setFriends(friendRes);
+                console.log("danh sach ban be",friendRes);
             }
             getFriends();
         }
