@@ -25,8 +25,9 @@ export const StoryReel = () => {
             try {
                 // Lấy danh sách bạn bè
                 const friendsResponse = await getFriendsByUserId(currentUser.id);
-                const friendsData = friendsResponse?.data; // Đây là mảng các đối tượng user
+                const friendsData = friendsResponse; // Đây là mảng các đối tượng user
                 setFriendList(friendsData);
+                console.log('friendsData:', friendsData);
                 // Tạo danh sách userId của currentUser và bạn bè
                 const allUserIds = [currentUser.id, ...friendsData.map(friend => friend.id)];
                 console.log('allUserIds:', allUserIds);
@@ -35,8 +36,8 @@ export const StoryReel = () => {
                 const storyResponses = await Promise.all(storyPromises);
                 // Gộp tất cả stories
                 const allStories = storyResponses
-                    .filter(response => response && response?.data && response?.data.$values) // Lọc bỏ các response không hợp lệ
-                    .map(response => response?.data.$values)
+                    .filter(response => response && response?.data && response?.data.stories) 
+                    .map(response => response?.data.stories)
                     .flat();
     
                 // Tạo map user để tra cứu nhanh thông tin người dùng
@@ -53,6 +54,8 @@ export const StoryReel = () => {
                 setStories(allStories);
                 setUsers(usersMap);
                 setFriends(friendsData);
+                console.log('usersMap:', usersMap);
+
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
@@ -78,8 +81,8 @@ export const StoryReel = () => {
         setUploadProgress(0); // Đặt lại tiến trình
 
         const formData = new FormData();
-        formData.append('userId', user);
-        formData.append('image', image);
+        formData.append('user_id', user);
+        formData.append('imageFile', image);
 
         try {
             // Giả lập tải lên
@@ -94,12 +97,16 @@ export const StoryReel = () => {
             }, 50);  // Cập nhật mỗi 50ms
 
 
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/story/create`, formData, {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/media/image`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
             });
-            setStories((prevStories) => [...prevStories, response?.data]); // Cập nhật danh sách stories
+            const responseStory = await axios.post(`${process.env.REACT_APP_API_URL}/post/stories`, {
+                user_id: user,
+                image: `${process.env.REACT_APP_API_URL}/media/uploads/${image.name}`,
+            });
+            setStories((prevStories) => [...prevStories, responseStory?.data.data.story]); // Cập nhật danh sách stories
             setPreviewImage(null);
             setSelectedFile(null);
             setUploadProgress(100); // Đặt tiến trình là 100 khi hoàn thành
@@ -142,7 +149,7 @@ export const StoryReel = () => {
         <div className="storyReel">
             <button onClick={handleSelectImage}><CreateStory /></button>
             {Array.isArray(stories) && stories.slice(startIndex, visibleStoriesCount).map((story, index) => {
-                const user = users[story.userId];
+                const user = users[story.user_id];
                 return (
                     <Story
                         key={index}

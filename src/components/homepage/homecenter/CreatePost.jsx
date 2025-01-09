@@ -92,6 +92,10 @@ export const CreatePost = ({ setPosts, isOpen, onClose, postEditId, postEditCont
                 isClosable: true,
             });
         }
+        finally {
+            setIsLoading(false);
+            onClose();
+        }
     };
 
     const handleChangeImage = (e) => {

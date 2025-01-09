@@ -94,14 +94,14 @@ export const getMessagesByUserIdAndContactId = async (
 };
 
 // Get friend of current user
-export const getFriendsByUserId = async (userId, currentUserId) => {
+export const getFriendsByUserId = async (userId) => {
   try {
     const response = await axios.get(
       `${process.env.REACT_APP_API_URL}/friend/friends/${userId}/friends`
     );
     const friends = response?.data.data.friends;
     const friendsData = await Promise.all(friends.map(async (friend) => {
-      if (friend.userID1 === currentUserId) {
+      if (friend.userID1 === userId) {
         return (await getUserById(friend.userID2)).data;
       } else {
         return (await getUserById(friend.userID1)).data;
@@ -152,8 +152,8 @@ export const markAsReadNotification = async (id) => {
 // story
 export const fetchDataForStory = async (userId) => {
   try {
-    const response = await axios.get(`${process.env.REACT_APP_API_URL}/story?userId=${userId}`);
-    return response;
+    const response = await axios.get(`${process.env.REACT_APP_API_URL}/post/stories/user/${userId}`);
+    return response?.data;
   } catch (error) {
     console.error("Error fetching data:", error);
   }

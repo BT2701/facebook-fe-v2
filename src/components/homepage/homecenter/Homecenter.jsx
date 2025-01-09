@@ -23,26 +23,12 @@ export const Homecenter = () => {
       if (response && response?.data) {
         post.profilePic = response?.data.avatar;
         post.profileName = response?.data.name;
-      } else {
-        console.error('Error: response or response.data is undefined');
-        // // Handle the case where response or response.data is missing
-        // post.profilePic = 'https://img-cdn.pixlr.com/image-generator/history/65bb506dcb310754719cf81f/ede935de-1138-4f66-8ed7-44bd16efc709/medium.webp'; // Or some default value
-        // post.profileName = 'Anonymous'; // Or some default name
-      }
-      // if (post.comments.$values.length && Array.isArray(post.comments.$values)) {
-      //   const updatedComments = await Promise.all(
-      //     post.comments.$values.map(async (comment) => {
-      //       return await updateCommentInfor(comment.userId, comment);
-      //     })
-      //   );
-        // post.comments.$value = updatedComments;
-      // }
+      } 
+      console.log("day la  fsdfs", post.profilePic);
+      console.log("day la namedfsdf", post.profileName);
       return post;
     } catch (error) {
       console.error('Error fetching user data:', error);
-      // // Handle the error (e.g., return default values or an empty object)
-      // post.profilePic = "https://img-cdn.pixlr.com/image-generator/history/65bb506dcb310754719cf81f/ede935de-1138-4f66-8ed7-44bd16efc709/medium.webp';
-      // post.profileName = 'Anonymous';
       return post;
     }
   };
@@ -55,17 +41,11 @@ export const Homecenter = () => {
         comment.profileName = response?.data.name;
       } else {
         console.error('Error: response or response.data is undefined');
-        // // Handle the case where response or response.data is missing
-        // post.profilePic = 'https://img-cdn.pixlr.com/image-generator/history/65bb506dcb310754719cf81f/ede935de-1138-4f66-8ed7-44bd16efc709/medium.webp'; // Or some default value
-        // post.profileName = 'Anonymous'; // Or some default name
       }
 
       return comment;
     } catch (error) {
       console.error('Error fetching user data:', error);
-      // // Handle the error (e.g., return default values or an empty object)
-      // post.profilePic = "https://img-cdn.pixlr.com/image-generator/history/65bb506dcb310754719cf81f/ede935de-1138-4f66-8ed7-44bd16efc709/medium.webp';
-      // post.profileName = 'Anonymous';
       return comment;
     }
   };
