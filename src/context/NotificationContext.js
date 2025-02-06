@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
 import axios from 'axios';
 import { useUser } from "./UserContext";
-import { useChatConn } from './ChatConnContext';
+// import { useChatConn } from './ChatConnContext';
 import { handleAcceptRequest, handleCancelRequest, handleRemoveRequest, handleSendRequest } from '../utils/handleRequestFriend';
 
 export const NotificationContext = createContext();
@@ -11,7 +11,7 @@ export const NotificationProvider = ({ children }) => {
     const [post, setPost] = useState(null);
     const [content, setContent] = useState('');
     const { currentUser } = useUser();
-    const { chatConn } = useChatConn();
+    // const { chatConn } = useChatConn();
 
     const handleSendRequestv2 = (currentUserId ,friendId, setFriendStatus, setIsUpdateFriends) => {
         handleSendRequest (currentUserId , friendId, setFriendStatus, setIsUpdateFriends);
@@ -41,9 +41,9 @@ export const NotificationProvider = ({ children }) => {
         axios.delete(`${process.env.REACT_APP_API_URL}/notification/delete/${user1}/${receiver}/${postId}/${action}`)
             .then(response => {
                 console.log('Notification deleted:', response?.data);
-                if (chatConn) {
-                    chatConn.invoke("DeleteNotification", receiver, response?.data);
-                }
+                // if (chatConn) {
+                //     chatConn.invoke("DeleteNotification", receiver, response?.data);
+                // }
             })
             .catch(error => {
                 console.error('Error deleting notification:', error);
@@ -73,9 +73,9 @@ export const NotificationProvider = ({ children }) => {
         axios.post(`${process.env.REACT_APP_API_URL}/notification`, notification)
             .then(response => {
                 console.log('Notification saved:', response?.data);
-                if (chatConn) {
-                    chatConn.invoke("SendNotification", receiverId, response?.data);
-                }
+                // if (chatConn) {
+                //     chatConn.invoke("SendNotification", receiverId, response?.data);
+                // }
             })
             .catch(error => {
                 console.error('Error saving notification:', error);

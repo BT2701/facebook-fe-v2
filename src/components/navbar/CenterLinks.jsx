@@ -1,6 +1,7 @@
 import { Button, Center } from "@chakra-ui/react";
 import { VscHome } from "react-icons/vsc";
 import { MdGroups } from "react-icons/md";
+import {BiJoystick} from "react-icons/bi";
 import { AiOutlineUserAdd } from "react-icons/ai";
 import { Icon } from "@chakra-ui/icons";
 import { Link } from "react-router-dom";
@@ -28,6 +29,7 @@ export const CenterLinks = () => {
       <CenterButton path={"/"} iconName={VscHome} />
       <CenterButton path={"/groups"} iconName={MdGroups} />
       <CenterButton path={"/friends"} iconName={AiOutlineUserAdd} />
+      <CenterButton path={"/game"} iconName={BiJoystick} />
     </>
   );
 };

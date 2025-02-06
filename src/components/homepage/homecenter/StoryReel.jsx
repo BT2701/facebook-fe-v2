@@ -54,7 +54,7 @@ export const StoryReel = () => {
                 setStories(allStories);
                 setUsers(usersMap);
                 setFriends(friendsData);
-                console.log('usersMap:', usersMap);
+                console.log('stories:', allStories);
 
             } catch (error) {
                 console.error("Error fetching data:", error);

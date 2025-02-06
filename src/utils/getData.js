@@ -460,3 +460,6 @@ export const getFriendSuggestions = async (userId, pageNumber = 1) => {
     return null; // Trả về null nếu có lỗi
   }
 };
+
+
+// game service

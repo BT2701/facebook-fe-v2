@@ -17,15 +17,15 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { getMessagesByUserId, getUserById } from "../../utils/getData";
-import { useChatBox } from "../../context/ChatBoxContext";
-import { useChatConn } from "../../context/ChatConnContext";
+// import { useChatBox } from "../../context/ChatBoxContext";
+// import { useChatConn } from "../../context/ChatConnContext";
 import { useUser } from "../../context/UserContext";
 import formatTimeFromDatabase from "../sharedComponents/formatTimeFromDatabase";
 
 export default function ChatMenu() {
-  const { setChatInfo } = useChatBox();
+  // const { setChatInfo } = useChatBox();
 
-  const { chatConn } = useChatConn();
+  // const { chatConn } = useChatConn();
 
   const { currentUser } = useUser();
 
@@ -35,16 +35,16 @@ export default function ChatMenu() {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleOpenChat = (avatar, isOnline, contactId, contactName, status) => {
-    setChatInfo({
-      isOpen: true,
-      avatar,
-      isOnline,
-      contactId,
-      contactName,
-      status,
-    });
-  };
+  // const handleOpenChat = (avatar, isOnline, contactId, contactName, status) => {
+  //   setChatInfo({
+  //     isOpen: true,
+  //     avatar,
+  //     isOnline,
+  //     contactId,
+  //     contactName,
+  //     status,
+  //   });
+  // };
 
   const getDataForChatMenu = async () => {
     const response = await getMessagesByUserId(currentUser.id);
@@ -94,22 +94,6 @@ export default function ChatMenu() {
     }
   }, [isLoading]);
 
-  useEffect(() => {
-    // Listening from server for message to display notification
-    if (chatConn) {
-      const incrementUnreadChat = () => {
-        setUnreadChat((prev) => prev + 1);
-      };
-
-      chatConn.on("ReceiveMessage", incrementUnreadChat);
-
-      return () => {
-        if (chatConn) {
-          chatConn.off("ReceiveMessage", incrementUnreadChat);
-        }
-      };
-    }
-  }, [chatConn]);
 
   return (
     <>
@@ -169,17 +153,7 @@ export default function ChatMenu() {
                   key={msg.id}
                   borderRadius={10}
                   p={3}
-                  onClick={() =>
-                    handleOpenChat(
-                      msg.avatar,
-                      msg.isOnline,
-                      msg.contactId,
-                      msg.contactName,
-                      msg.isOnline === 1
-                        ? "active"
-                        : formatTimeFromDatabase(msg.lastActive)
-                    )
-                  }
+                  
                 >
                   <Avatar mr={5} src={msg.avatar} name={msg.contactName}>
                     {msg.isOnline === 1 && (

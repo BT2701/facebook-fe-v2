@@ -14,11 +14,12 @@ import { ProfileNav } from "../components/profile/ProfileNav";
 import { UserProfileNav } from "../components/userProfile/UserProfileNav";
 import { Groups } from "../components/groups/Groups";
 import SearchPage from "../components/filter/SearchPage";
-import { ChatConnProvider } from "../context/ChatConnContext";
-import { ChatBoxProvider } from "../context/ChatBoxContext";
+// import { ChatConnProvider } from "../context/ChatConnContext";
+// import { ChatBoxProvider } from "../context/ChatBoxContext";
 import ConfirmEmail from "../components/auth/confirmEmail";
 import Forgot from "../components/auth/Forgot";
 import ResetPassword from "../components/auth/ResetPassword";
+import BaseGame from "../components/slotGame/baseGame";
 
 export const Router = () => {
   return (
@@ -32,15 +33,16 @@ export const Router = () => {
           path="/"
           element={
             // <ChatConnProvider>
-              <ChatBoxProvider>
+              // <ChatBoxProvider>
                 <Navbar />
-              </ChatBoxProvider>
+              // </ChatBoxProvider>
             // </ChatConnProvider>
           }
         >
           <Route path="/" element={<Homepage />} />
           <Route path="groups" element={<Groups />} />
           <Route path="friends" element={<FriendRequest />} />
+          <Route path="game" element={<BaseGame/>} />
           <Route path="friends/suggestions" element={<FriendRequest />} />
           <Route path="friends/all-friends" element={<FriendRequest />} />
           <Route path="search" element={<SearchPage />} />

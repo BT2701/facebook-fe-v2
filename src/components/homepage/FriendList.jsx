@@ -6,14 +6,14 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { useChatBox } from "../../context/ChatBoxContext";
+// import { useChatBox } from "../../context/ChatBoxContext";
 import { useUser } from "../../context/UserContext";
 import { getFriendsByUserId } from "../../utils/getData";
 import { useEffect, useState } from "react";
 import formatTimeFromDatabase from "../sharedComponents/formatTimeFromDatabase";
 
 export default function FriendList() {
-  const { setChatInfo } = useChatBox();
+  // const { setChatInfo } = useChatBox();
 
   // Get current login user
   const { currentUser } = useUser();
@@ -45,16 +45,16 @@ export default function FriendList() {
     setFriends(friendList);
   };
 
-  const handleOpenChat = (avatar, isOnline, contactId, contactName, status) => {
-    setChatInfo({
-      isOpen: true,
-      avatar,
-      isOnline,
-      contactId,
-      contactName,
-      status,
-    });
-  };
+  // const handleOpenChat = (avatar, isOnline, contactId, contactName, status) => {
+  //   setChatInfo({
+  //     isOpen: true,
+  //     avatar,
+  //     isOnline,
+  //     contactId,
+  //     contactName,
+  //     status,
+  //   });
+  // };
 
   useEffect(() => {
     fetchCurrentUserFriends();
@@ -70,17 +70,7 @@ export default function FriendList() {
               spacing={4}
               _hover={{ bg: "gray.300", cursor: "pointer", borderRadius: "md" }}
               p={2}
-              onClick={() =>
-                handleOpenChat(
-                  friend.avatar,
-                  friend.isOnline,
-                  friend.id,
-                  friend.name,
-                  friend.isOnline === 1
-                    ? "active"
-                    : formatTimeFromDatabase(friend.lastActive)
-                )
-              }
+              
             >
               <Avatar size="sm" src={friend.avatar} name={friend.name}>
                 {friend.isOnline === 1 && (

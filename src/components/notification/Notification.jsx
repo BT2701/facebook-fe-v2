@@ -21,7 +21,7 @@ import formatTimeFromDatabase from "../sharedComponents/formatTimeFromDatabase";
 import { fetchDataForNotification, getUserById, markAllAsReadNotification, markAsReadNotification } from "../../utils/getData";
 import { useUser } from "../../context/UserContext";
 import PostRedirect from "./PostRedirect";
-import { useChatConn } from "../../context/ChatConnContext";
+// import { useChatConn } from "../../context/ChatConnContext";
 import { useNavigate } from "react-router-dom";
 
 
@@ -67,7 +67,7 @@ const Notifications = () => {
     const { currentUser } = useUser();
     const [openDialog, setOpenDialog] = useState(false);
     const [feedId, setFeedId] = useState(null);
-    const { chatConn } = useChatConn();
+    // const { chatConn } = useChatConn();
     const nav = useNavigate();
     const [userId, setUserId] = useState({});
     const [actionId, setActionId] = useState({});
@@ -77,39 +77,39 @@ const Notifications = () => {
         return user?.data || 'Unknown';
     };
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const response = await fetchDataForNotification( currentUser.id );
-            if (response) {
-                setNotificationList(response?.data);
-                const unreadCount = response?.data.filter(item => item.is_read === 0).length;
-                setUnreadCount(unreadCount);
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         const response = await fetchDataForNotification( currentUser.id );
+    //         if (response) {
+    //             setNotificationList(response?.data);
+    //             const unreadCount = response?.data.filter(item => item.is_read === 0).length;
+    //             setUnreadCount(unreadCount);
 
-                const users = await Promise.all(
-                    response?.data.map(async (notification) => {
-                        const user = await fetchUser(notification.user);
-                        return { [notification.user]: user };
-                    })
-                );
+    //             const users = await Promise.all(
+    //                 response?.data.map(async (notification) => {
+    //                     const user = await fetchUser(notification.user);
+    //                     return { [notification.user]: user };
+    //                 })
+    //             );
 
-                // Combine each result into a single object with user IDs as keys
-                setUserNames(Object.assign({}, ...users));
-            }
-        };
-        fetchData();
-        setReadNotification(0);
-    }, [readNotification, notificationList.length]);
+    //             // Combine each result into a single object with user IDs as keys
+    //             setUserNames(Object.assign({}, ...users));
+    //         }
+    //     };
+    //     fetchData();
+    //     setReadNotification(0);
+    // }, [readNotification, notificationList.length]);
 
-    useEffect(() => {
-        if (chatConn) {
-            chatConn.on("ReceiveNotification", (notification) => {
-                setNotificationList((prev) => [...prev, notification]);
-            });
-            chatConn.on("DeleteNotification", (notification1) => {
-                setNotificationList((prev) => prev.filter(notification => notification.id !== notification1.id));
-            });
-        }
-    }, [chatConn]);
+    // useEffect(() => {
+    //     if (chatConn) {
+    //         chatConn.on("ReceiveNotification", (notification) => {
+    //             setNotificationList((prev) => [...prev, notification]);
+    //         });
+    //         chatConn.on("DeleteNotification", (notification1) => {
+    //             setNotificationList((prev) => prev.filter(notification => notification.id !== notification1.id));
+    //         });
+    //     }
+    // }, [chatConn]);
 
     const markAllAsRead = async () => {
         try {
