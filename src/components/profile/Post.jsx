@@ -15,6 +15,7 @@ import axios from "axios";
 import { useUser } from "../../context/UserContext";
 import formatTimeFromDatabase from "../sharedComponents/formatTimeFromDatabase";
 import { getUserById } from "../../utils/getData";
+import { API_URL } from "../../config/env";
 
 const IntroText = ({ icon, title }) => {
     return (
@@ -54,7 +55,7 @@ export const Post = () => {
     const fetchPosts = async () => {
         // if (!hasMore) return;
         try {
-            const response = await axios.get(`http://localhost:8000/post/posts/user/${currentUser.id}`)
+            const response = await axios.get(`${API_URL}/post/posts/user/${currentUser.id}`)
             const fetchedPosts = await Promise.all(
                 response?.data.data.posts.map((post) =>
                     updatePostInfor(post.user_id, post)

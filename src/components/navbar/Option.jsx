@@ -25,6 +25,7 @@ import ChatMenu from "./ChatMenu";
 import { useUser } from "../../context/UserContext.js";
 import { useEffect, useState } from "react";
 import { getUserById } from "../../utils/getData.js";
+import { API_URL } from "../../config/env";
 
 const Item = ({ iconName, title }) => {
   return (
@@ -43,7 +44,7 @@ export const Option = () => {
   const handleLogout = async () => {
     try {
       // Gọi API để logout
-      await axios.put("http://localhost:8000/user/api/logout", currentUser.email, {
+      await axios.put(`${API_URL}/user/api/logout`, currentUser.email, {
         withCredentials: true,
       });
 

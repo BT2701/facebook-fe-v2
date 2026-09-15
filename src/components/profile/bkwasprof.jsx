@@ -1,5 +1,6 @@
 import React from 'react';
 import $ from 'jquery';
+import { API_URL } from '../../config/env';
 
 export default class PictureUploader extends React.Component {
   constructor(props) {
@@ -40,7 +41,7 @@ return (
  formData.append("file", this.state.picture);
 
    $.ajax({
-    url: "http://localhost:1234/user/61ea57eae6a5be4e7d9fe54b",
+    url: `${API_URL}/user/api/user/61ea57eae6a5be4e7d9fe54b`,
     method: "POST",
     data: formData,
     cache: false,

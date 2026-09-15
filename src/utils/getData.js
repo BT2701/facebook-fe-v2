@@ -1,7 +1,8 @@
 import axios from "axios";
+import { API_URL } from "../config/env";
 
 export const getData = (id, setState) => {
-  fetch(`http://localhost:1234/user/${id}`)
+  fetch(`${API_URL}/user/api/user/${id}`)
     .then((res) => res.json())
     .then((res) => {
       setState(res);
@@ -12,7 +13,7 @@ export const getData = (id, setState) => {
 };
 
 export const getDataInside = (id, setState) => {
-  fetch(`http://localhost:1234/user/${id}`)
+  fetch(`${API_URL}/user/api/user/${id}`)
     .then((res) => res.json())
     .then((res) => {
       setState(res.friend_ids);
@@ -23,7 +24,7 @@ export const getDataInside = (id, setState) => {
 };
 
 export const getDataRequest = (id, setState) => {
-  fetch(`http://localhost:1234/user/${id}`)
+  fetch(`${API_URL}/user/api/user/${id}`)
     .then((res) => res.json())
     .then((res) => {
       setState(res.friend_request_in_ids);
@@ -34,7 +35,7 @@ export const getDataRequest = (id, setState) => {
 };
 
 export const getDataIterate = (id, state, setState) => {
-  fetch(`http://localhost:1234/user/${id}`)
+  fetch(`${API_URL}/user/api/user/${id}`)
     .then((res) => res.json())
     .then((res) => {
       state.push(res);

@@ -1,8 +1,10 @@
 # Facebook Frontend
-## Link to Back-end: [Click here](https://github.com/BT2701/facebook-be-v2)
+
+React client for the [facebook-be-v2](https://github.com/BT2701/facebook-be-v2) microservices.
+
 ## Introduction
 
-This project is a frontend application for Facebook, built using Create React App.
+Create React App client. API base URL comes from `REACT_APP_API_URL` (see `.env.example`). Default is Kong at `http://localhost:8000`.
 
 
 ## Table of Contents
@@ -116,9 +118,12 @@ In the project directory, you can run:
 First, clone the repository to your local machine using the following command:
 
 ```bash
-git clone https://github.com/BT2701/facebook-frontend.git
-cd facebook-frontend
+git clone https://github.com/BT2701/facebook-fe-v2.git
+cd facebook-fe-v2
+cp .env.example .env
 ```
+
+Start the backend with `docker compose up --build` in `facebook-be-v2` first.
 
 ### `npm install`
 

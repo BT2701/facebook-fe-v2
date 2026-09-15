@@ -1,1 +1,3 @@
-// export const Heroku = 'https://facebookk-clone.herokuapp.com'
+import { API_URL } from '../config/env';
+
+export const Heroku = API_URL;

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { API_URL } from "../../config/env";
 
 const ResetPassword = () => {
   const [searchParams] = useSearchParams();
@@ -20,7 +21,7 @@ const ResetPassword = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/user/api/reset", {
+      const response = await fetch(`${API_URL}/user/api/reset`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, password }),
