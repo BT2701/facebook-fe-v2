@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { useToast } from '@chakra-ui/react';
-import { API_URL } from '../../config/env';
+import { http } from '../../config/http';
 const Forgot = () => {
     const [email, setEmail] = useState('');
     const navigate = useNavigate();
@@ -11,7 +10,7 @@ const Forgot = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(`${API_URL}/user/api/forgot`, { email });
+            const response = await http.post('/user/api/forgot', { email });
             console.log('Forgot response:', response.data);
             toast({
                 title: "Successed.",

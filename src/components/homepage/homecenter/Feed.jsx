@@ -7,7 +7,7 @@ import { FaRegCommentAlt } from "react-icons/fa";
 import { RiShareForwardLine } from "react-icons/ri";
 import { CreatePost } from "./CreatePost";
 import "./feed.css";
-import axios from "axios";
+import { http } from "../../../config/http";
 import { useNotification } from "../../../context/NotificationContext";
 import confirmDialog from '../../sharedComponents/confirmDialog';
 import { useNavigate } from "react-router-dom";
@@ -32,7 +32,7 @@ export const Feed = ({
     updateCommentInfor,
     // userId
 }) => {
-    const [comments, setComments] = useState(commentList); // Stores comments
+    const [comments, setComments] = useState(commentList || []);
     const [newCommentContent, setNewComment] = useState(""); // New comment input
     const [commentVisible, setCommentVisible] = useState(false); // Toggles comment section visibility
     const [currentUserLiked, setCurrentUserLiked] = useState(likedByCurrentUser); // Toggles like
@@ -51,14 +51,14 @@ export const Feed = ({
 
     const handleLike = async () => {
         const likeData = {
-            UserId: currentUserId,
-            Timeline: new Date().toISOString(), // Current timestamp
-            PostId: postId,
+            user_id: currentUserId,
+            timeline: new Date().toISOString(),
+            post_id: postId,
         };
 
         try {
-            const response = await axios.post(
-                `${process.env.REACT_APP_API_URL}/reaction`,
+            const response = await http.post(
+                '/post/reactions',
                 likeData,
                 {
                     headers: {
@@ -73,7 +73,7 @@ export const Feed = ({
             console.log(response.status);
 
             // Handle different response statuses
-            if (response.status === 200) {
+            if (response.status === 200 || response.status === 201) {
                 // Optimistically update the UI
                 setCurrentUserLiked(true);
                 setNumberLiked((prev) => prev + 1); // Increment the local like count
@@ -94,8 +94,7 @@ export const Feed = ({
                 );
             }
 
-            // Trigger notification creation
-            createNotification(userCreatePost, postId, "Liked your post", 1);
+            createNotification();
         } catch (error) {
             console.error("Error: ", error);
             // Optional: revert optimistic UI updates if there's an error
@@ -124,12 +123,11 @@ export const Feed = ({
 
     const handleUnLike = async () => {
         try {
-            const response = await axios.delete(
-                `${process.env.REACT_APP_API_URL}/reaction/${postId}/${currentUserId}`
+            const response = await http.delete(
+                `/post/reaction/${postId}/${currentUserId}`
             );
 
-            // Check if the response indicates success
-            if (response.status === 204) {
+            if (response.status === 200 || response.status === 204) {
                 // Optimistically update the UI
                 setCurrentUserLiked(false);
                 setNumberLiked((prev) => prev - 1); // Decrement local like count
@@ -180,20 +178,20 @@ export const Feed = ({
         }
 
         const commentInfo = {
-            UserId: currentUserId,
-            PostId: postId,
-            Content: newCommentContent,
+            user_id: currentUserId,
+            post_id: postId,
+            content: newCommentContent,
         };
         try {
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/comment`, commentInfo, {
+            const response = await http.post('/post/comments', commentInfo, {
                 headers: {
                     "Content-Type": "application/json",
                 },
             });
 
-            if (response.status === 201) {
-                const commentCreated = response?.data;
-                updateCommentInfor(commentCreated.userId, commentCreated).then((data) => {
+            if (response.status === 200 || response.status === 201) {
+                const commentCreated = response?.data?.data?.comment || response?.data;
+                updateCommentInfor(commentCreated.user_id || commentCreated.userId, commentCreated).then((data) => {
                     const updatedComments = [data, ...comments];
                     setComments(updatedComments);
                     setNewComment("");
@@ -201,7 +199,7 @@ export const Feed = ({
                 })
 
             }
-            createNotification(userCreatePost, postId, "Commented your post", 2);
+            createNotification();
 
         } catch (error) {
             console.error("Error: ", error);
@@ -239,8 +237,8 @@ export const Feed = ({
                     'warning' // Icon (có thể sử dụng 'warning', 'info', 'success', 'error', 'question')
                 );
                 if (!confirmDelete) return;
-                const response = await axios.delete(`${process.env.REACT_APP_API_URL}/comment/${commentId}`);
-                if (response.status === 204) {
+                const response = await http.delete(`/post/comment/${commentId}`);
+                if (response.status === 200 || response.status === 204) {
                     const updatedComments = comments?.filter((comment) => comment.id !== commentId);
                     setComments(updatedComments);
                     updateComments(postId, updatedComments); // Call update function
@@ -283,10 +281,10 @@ export const Feed = ({
         }
 
         try {
-            const response = await axios.put(
-                `${process.env.REACT_APP_API_URL}/comment/${commentEditId}`,
+            const response = await http.put(
+                `/post/comment/${commentEditId}`,
                 {
-                    Content: editedContentComment
+                    content: editedContentComment
                 },
                 {
                     headers: {
@@ -295,7 +293,7 @@ export const Feed = ({
                 }
             );
 
-            if (response.status === 204) {
+            if (response.status === 200 || response.status === 204) {
                 const updatedComments = comments?.map((comment) =>
                     comment.id === commentEditId ? { ...comment, content: editedContentComment } : comment
 
@@ -339,8 +337,8 @@ export const Feed = ({
 
         try {
             setIsDeleting(true);
-            const response = await axios.delete(`${process.env.REACT_APP_API_URL}/post/${postDeleteId}`);
-            if (response.status === 204) {
+            const response = await http.delete(`/post/posts/${postDeleteId}`);
+            if (response.status === 200 || response.status === 204) {
                 setIsDeleting(false);
                 toast({
                     title: "Post deleted",
@@ -501,7 +499,7 @@ export const Feed = ({
                                         </Box>
 
                                         {/* Menu only shown if the logged-in user is the owner of the comment */}
-                                        {currentUserId === comment.userId && (
+                                        {(currentUserId === comment.user_id || currentUserId === comment.userId) && (
                                             <Menu>
                                                 <MenuButton as={Button}>...</MenuButton>
                                                 <MenuList>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, GridItem, Box, useToast } from '@chakra-ui/react';
-import axios from 'axios';
-import { use } from 'react';
+import { http } from '../../config/http';
+import { unwrap } from '../../config/api';
 
 const ReelsComponent = ({ isSpin, setIsSpin, balance, setBalance, playerID, betAmount, setFlag }) => {
   const [grid, setGrid] = useState([]);
@@ -16,9 +16,10 @@ const ReelsComponent = ({ isSpin, setIsSpin, balance, setBalance, playerID, betA
   useEffect(() => {
     const fetchReelData = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/game/reels`);
-        setRows(response?.data.data.reel.rows);
-        setColumns(response?.data.data.reel.columns);
+        const response = await http.get('/game/reels');
+        const reel = unwrap(response)?.reel;
+        setRows(reel.rows);
+        setColumns(reel.columns);
       } catch (error) {
         console.error('Failed to fetch reel data:', error);
       }
@@ -26,8 +27,8 @@ const ReelsComponent = ({ isSpin, setIsSpin, balance, setBalance, playerID, betA
 
     const fetchSymbols = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/game/symbols`);
-        const symbolsData = response.data.data.symbols;
+        const response = await http.get('/game/symbols');
+        const symbolsData = unwrap(response)?.symbols;
         setSymbols(symbolsData);
       } catch (error) {
         console.error('Failed to fetch symbols data:', error);
@@ -36,8 +37,8 @@ const ReelsComponent = ({ isSpin, setIsSpin, balance, setBalance, playerID, betA
 
     const fetchPaylines = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/game/paylines`);
-        const paylinesData = response?.data.data.paylines;
+        const response = await http.get('/game/paylines');
+        const paylinesData = unwrap(response)?.paylines;
         setPaylines(paylinesData || []);
       } catch (error) {
         console.error('Failed to fetch paylines data:', error);
@@ -106,16 +107,15 @@ const ReelsComponent = ({ isSpin, setIsSpin, balance, setBalance, playerID, betA
 
   const calculateWinnings = async (finalSymbols) => {
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/game/calculate_winnings`,
+      const response = await http.post(
+        '/game/calculate_winnings',
         {
           finalSymbols,
           betAmount
         }
       );
-      console.log('Winnings calculated:', response.data.data);
       if (response.status === 200) {
-        const { winAmount, results } = response.data.data;
+        const { winAmount, results } = unwrap(response);
         return { winAmount, results };
       }
     } catch (error) {
@@ -174,12 +174,12 @@ const ReelsComponent = ({ isSpin, setIsSpin, balance, setBalance, playerID, betA
     };
 
     try {
-      const sessionResponse = await axios.post(
-        `${process.env.REACT_APP_API_URL}/game/game_session`,
+      const sessionResponse = await http.post(
+        '/game/game_session',
         sessionData
       );
 
-      const sessionId = sessionResponse?.data.data.gameSession.id;
+      const sessionId = unwrap(sessionResponse)?.gameSession.id;
       const resultData = results?.map((result) => ({
         ...result,
         sessionId,
@@ -187,13 +187,14 @@ const ReelsComponent = ({ isSpin, setIsSpin, balance, setBalance, playerID, betA
       }));
       if (resultData?.length >0){
         for (const result of resultData) {
-          const resultRes = await axios.post(`${process.env.REACT_APP_API_URL}/game/game_result`, result);
-          console.log('Results saved:', resultRes.data.data.gameResult);
+          await http.post('/game/game_result', result);
         }
       }
       if (winAmount > 0){
-        await axios.put(
-          `${process.env.REACT_APP_API_URL}/game/player/${playerID}/balance?amount=${balance + winAmount}`
+        await http.put(
+          `/game/player/${playerID}/balance`,
+          null,
+          { params: { amount: balance + winAmount } }
         );
       }
       setFlag(1);

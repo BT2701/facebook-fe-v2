@@ -4,7 +4,8 @@ import {
   Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton,
   useDisclosure, Text, HStack,
 } from '@chakra-ui/react';
-import axios from 'axios';
+import { http } from '../../config/http';
+import { unwrap } from '../../config/api';
 import { useUser } from '../../context/UserContext';
 import { FaHistory, FaEye, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import GameHistoryDetail from './gameHistoryDetail';
@@ -19,11 +20,11 @@ const GameHistory = () => {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/game/game_sessions/${currentUser?.id}`,
+        const response = await http.get(
+          `/game/game_sessions/${currentUser?.id}`,
           { params: { page, limit: 6 } }
         );
-        setHistory(response?.data?.data?.gameSessions || []);
+        setHistory(unwrap(response)?.gameSessions || []);
       } catch (error) {
         console.error('Failed to fetch game history:', error);
       }

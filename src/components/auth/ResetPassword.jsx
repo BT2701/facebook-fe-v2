@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { API_URL } from "../../config/env";
+import { http } from "../../config/http";
 
 const ResetPassword = () => {
   const [searchParams] = useSearchParams();
@@ -21,21 +21,16 @@ const ResetPassword = () => {
     }
 
     try {
-      const response = await fetch(`${API_URL}/user/api/reset`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, password }),
-      });
+      const response = await http.post('/user/api/reset', { token, password });
 
-      if (response.ok) {
+      if (response.status === 200) {
         toast.success("Password reset successfully!");
         nav("/login");
       } else {
-        const data = await response.json();
-        setMessage(data.error || "Failed to reset password.");
+        setMessage(response.data?.error || 'Failed to reset password.');
       }
     } catch (error) {
-      setMessage("An error occurred. Please try again later.");
+      setMessage(error.response?.data?.error || 'An error occurred. Please try again later.');
     }
   };
 

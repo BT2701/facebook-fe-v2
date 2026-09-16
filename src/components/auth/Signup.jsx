@@ -20,7 +20,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import axios from "axios";
+import { http } from "../../config/http";
 
 export const Signup = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -159,15 +159,7 @@ export const Signup = () => {
 
     // Nếu tất cả đều hợp lệ, thực hiện yêu cầu API
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/user/api/register`,
-        userData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await http.post('/user/api/register', userData);
 
       if (response.status === 200) {
         toast({

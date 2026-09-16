@@ -2,9 +2,17 @@
 
 React client for the [facebook-be-v2](https://github.com/BT2701/facebook-be-v2) microservices.
 
+## Version
+
+**0.3.0** — aligned with backend gateway-only access, JWT writes, and Redis notification events.
+
 ## Introduction
 
-Create React App client. API base URL comes from `REACT_APP_API_URL` (see `.env.example`). Default is Kong at `http://localhost:8000`.
+Create React App client. API calls go through `src/config/http.js` (JWT on every request). Base URL comes from `REACT_APP_API_URL` (see `.env.example`). Default is Kong at `http://localhost:8000`. Service ports `8080–8086` are no longer public.
+
+Session is restored from `localStorage` (`token` + `user`). Expired tokens send you back to login.
+
+Like, comment, and friend actions are persisted by the backend event bus. The inbox polls `/notification/receiver/:id` every 15 seconds.
 
 
 ## Table of Contents

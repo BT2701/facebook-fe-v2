@@ -1,21 +1,18 @@
 import { Box, Flex, Grid, Heading, Icon, Text } from "@chakra-ui/react";
-import { loadData } from "../../utils/localstore";
 import { EditProfile } from "./EditProfile";
 import { AiFillHeart } from "react-icons/ai";
 import { MdMapsHomeWork, MdPlace, MdSkateboarding, MdAccountBalance, MdSchool } from "react-icons/md";
 import { useEffect, useState, useCallback } from "react";
-import { Homecenter } from "../homepage/homecenter/Homecenter";
 import { Feed } from "../homepage/homecenter/Feed";
-import { Heroku } from "../../utils/herokuLink";
 import { useOutletContext } from "react-router-dom/dist";
 import { FaTransgender, FaBirthdayCake } from "react-icons/fa";
 import { IoShareSocialOutline } from "react-icons/io5";
 import { MdOutlinePhone } from "react-icons/md";
-import axios from "axios";
 import { useUser } from "../../context/UserContext";
 import formatTimeFromDatabase from "../sharedComponents/formatTimeFromDatabase";
-import { getUserById } from "../../utils/getData";
-import { API_URL } from "../../config/env";
+import { getUserById, hydratePost } from "../../utils/getData";
+import { asArray, unwrap } from "../../config/api";
+import { http } from "../../config/http";
 
 const IntroText = ({ icon, title }) => {
     return (
@@ -55,10 +52,10 @@ export const Post = () => {
     const fetchPosts = async () => {
         // if (!hasMore) return;
         try {
-            const response = await axios.get(`${API_URL}/post/posts/user/${currentUser.id}`)
+            const response = await http.get(`/post/posts/user/${user?.id || currentUser.id}`);
             const fetchedPosts = await Promise.all(
-                response?.data.data.posts.map((post) =>
-                    updatePostInfor(post.user_id, post)
+                asArray(unwrap(response)?.posts).map((post) =>
+                    hydratePost(post, currentUser.id)
                 )
             );
             const uniquePosts = fetchedPosts.filter(
@@ -136,13 +133,13 @@ export const Post = () => {
             } else {
                 console.error('Lỗi: response hoặc response.data không xác định');
             }
-            if (post.comments.$values.length && Array.isArray(post.comments.$values)) {
-                const updatedComments = await Promise.all(
-                    post.comments.$values.map(async (comment) => {
-                        return await updateCommentInfor(comment.user_id, comment);
+            const comments = asArray(post.comments);
+            if (comments.length) {
+                post.comments = await Promise.all(
+                    comments.map(async (comment) => {
+                        return await updateCommentInfor(comment.user_id || comment.userId, comment);
                     })
                 );
-                post.comments.$value = updatedComments;
             }
             return post;
         } catch (error) {
@@ -171,7 +168,7 @@ export const Post = () => {
     const updateCommentsForPost = (postId, updatedComments) => {
         setPosts((prevPosts) =>
             prevPosts.map((post) =>
-                post.id === postId ? { ...post, comments: { $values: updatedComments } } : post
+                post.id === postId ? { ...post, comments: updatedComments } : post
             )
         );
     };
@@ -224,8 +221,8 @@ export const Post = () => {
                                                 userName={post.profileName}
                                                 postImage={post.image}
                                                 // likedByCurrentUser={post.likedByCurrentUser}
-                                                likeCount={post.reactions?.length}
-                                                commentList={post.comments}
+                                                likeCount={post.likeCount || post.reactions?.length || 0}
+                                                commentList={post.comments || []}
                                                 currentUserId={currentUser.id}
                                                 userCreatePost={post.user_id}
                                                 setPosts={setPosts}

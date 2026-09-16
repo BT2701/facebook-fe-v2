@@ -3,7 +3,9 @@ import { Story } from "./Story";
 import "./storyReel.css";
 import CreateStory from "./CreateStory";
 import { FaArrowRight, FaArrowLeft } from 'react-icons/fa';
-import axios from "axios";
+import { API_URL } from "../../../config/env";
+import { http } from "../../../config/http";
+import { asArray } from "../../../config/api";
 import { fetchDataForStory, getFriendsByUserId, getUserById } from "../../../utils/getData";
 import { useUser } from "../../../context/UserContext";
 import ImagePreviewDialog from "./ImagePreviewDialog";
@@ -36,9 +38,7 @@ export const StoryReel = () => {
                 const storyResponses = await Promise.all(storyPromises);
                 // Gộp tất cả stories
                 const allStories = storyResponses
-                    .filter(response => response && response?.data && response?.data.stories) 
-                    .map(response => response?.data.stories)
-                    .flat();
+                    .flatMap((response) => asArray(response?.stories || response?.data?.stories));
     
                 // Tạo map user để tra cứu nhanh thông tin người dùng
                 const usersMap = friendsData.reduce((acc, friend) => {
@@ -97,14 +97,10 @@ export const StoryReel = () => {
             }, 50);  // Cập nhật mỗi 50ms
 
 
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/media/image`, formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
-            const responseStory = await axios.post(`${process.env.REACT_APP_API_URL}/post/stories`, {
+            await http.post('/media/image', formData);
+            const responseStory = await http.post('/post/stories', {
                 user_id: user,
-                image: `${process.env.REACT_APP_API_URL}/media/uploads/${image.name}`,
+                image: `${API_URL}/media/uploads/${image.name}`,
             });
             setStories((prevStories) => [...prevStories, responseStory?.data.data.story]); // Cập nhật danh sách stories
             setPreviewImage(null);

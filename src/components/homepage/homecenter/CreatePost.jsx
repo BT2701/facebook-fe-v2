@@ -16,10 +16,11 @@ import {
     Input
 } from "@chakra-ui/react";
 import { useState } from "react";
-import axios from "axios";
+import { API_URL } from "../../../config/env";
+import { http } from "../../../config/http";
+import { unwrap } from "../../../config/api";
 import { CloseIcon } from "@chakra-ui/icons";
 import { useUser } from "../../../context/UserContext";
-import { useNotification } from "../../../context/NotificationContext";
 
 export const CreatePost = ({ setPosts, isOpen, onClose, postEditId, postEditContent, postEditImage, currentUserId, setLastPostId, updatePostInfor }) => {
     const [postContent, setPostContent] = useState(postEditContent ? postEditContent : "");
@@ -29,7 +30,6 @@ export const CreatePost = ({ setPosts, isOpen, onClose, postEditId, postEditCont
     const toast = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const { friendList } = useUser();
-    const { createNotification, deleteNotification } = useNotification();
 
     const handlePostSubmit = async () => {
 
@@ -60,19 +60,19 @@ export const CreatePost = ({ setPosts, isOpen, onClose, postEditId, postEditCont
             }
             else {
                 // Create new post
-                const createPostResponse = await axios.post(`${process.env.REACT_APP_API_URL}/post/posts`, {
+                const createPostResponse = await http.post('/post/posts', {
                     content: postContent,
-                    image: `${process.env.REACT_APP_API_URL}/media/uploads/${image.name}`,
+                    image: image?.name ? `${API_URL}/media/uploads/${image.name}` : '',
                     user_id: currentUserId,
                 });
-                setPosts((prevPosts) => [createPostResponse?.data.data.post, ...prevPosts]);
-                formData.append("post_id", createPostResponse?.data.data.post.id);
-                console.log("createPostResponse: ", createPostResponse.data.data);
-                if (createPostResponse?.data.data.post.image) {
-                    const uploadResponse = await axios.post(`${process.env.REACT_APP_API_URL}/media/image`, formData);
+                const created = unwrap(createPostResponse)?.post || createPostResponse?.data?.data?.post;
+                setPosts((prevPosts) => [created, ...prevPosts]);
+                formData.append("post_id", created.id);
+                if (created.image) {
+                    await http.post('/media/image', formData);
                 }
                 if(createPostResponse.status === 200){
-                    setLastPostId(createPostResponse?.data.data.post.id);
+                    setLastPostId?.(created.id);
                     toast({
                         title: "Success",
                         description: "Post created successfully",

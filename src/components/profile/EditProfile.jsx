@@ -1,9 +1,8 @@
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Button, useDisclosure, Input, Divider, Box, Heading, Flex, VStack, useToast, Select, } from '@chakra-ui/react';
 import { RiEdit2Fill } from 'react-icons/ri';
 import { useState, useEffect } from "react";
-import axios from 'axios';
-import { current } from '@reduxjs/toolkit';
-
+import { http } from '../../config/http';
+import { unwrap } from '../../config/api';
 export const EditProfile = ({ m, w, title, userData, setUser }) => {
 
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -71,8 +70,9 @@ export const EditProfile = ({ m, w, title, userData, setUser }) => {
                 });
                 return;
             }
-            const existUser = await axios.get(`${process.env.REACT_APP_API_URL}/user/api/user?email=${formData.email}`);
-            if (existUser?.data && existUser?.data.data.id !== userData.id) {
+            const existUser = await http.get('/user/api/user', { params: { email: formData.email } });
+            const existing = unwrap(existUser);
+            if (existing && existing.id !== userData.id) {
                 toast({
                     title: "Email already exists",
                     description: "This email address is already in use. Please enter a different email address.",
@@ -86,7 +86,7 @@ export const EditProfile = ({ m, w, title, userData, setUser }) => {
         }
 
         try {
-            const response = await axios.put(`${process.env.REACT_APP_API_URL}/user/api/edit`, {
+            const response = await http.put('/user/api/edit', {
                 email: formData.email,
                 user: formData,
             });

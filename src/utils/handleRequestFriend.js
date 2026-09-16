@@ -13,10 +13,10 @@ export const handleSendRequest = async (currentUserId, friendId, setFriendStatus
 // *****************
 //gọi hàm addFriendAndDeleteRequest để đồng bộ
 export const handleAcceptRequest = async (currentUserId, friendId, setFriendStatus, setIsUpdateFriends) => {
-    const resGetReq = await getRequestBySenderAndReceiver(currentUserId,friendId);
+    const resGetReq = await getRequestBySenderAndReceiver(friendId, currentUserId);
     if (resGetReq && resGetReq.length > 0) {
         const response = await addFriendAndDeleteRequest(currentUserId, friendId,resGetReq[0]?.id);
-        if (response ==204 ) {
+        if (response === 200 || response === 201) {
             setFriendStatus("friend");
             if (setIsUpdateFriends) setIsUpdateFriends(prev => !prev);
         }else{
@@ -35,7 +35,7 @@ export const handleAcceptRequest = async (currentUserId, friendId, setFriendStat
 // Hàm xử lý khi từ chối lời mời kết bạn
 export const handleCancelRequest = async (currentUserId, friendId, setFriendStatus, setIsUpdateFriends, onClose) => {
     const response = await deleteRequestBySenderIdAndReceiverId(friendId, currentUserId);
-    if (response == 204 || response ==404) {
+    if (response === 200 || response === 204 || response === 404) {
         setFriendStatus("notFriend");
         if (setIsUpdateFriends) setIsUpdateFriends(prev => !prev);
         if (onClose) onClose();

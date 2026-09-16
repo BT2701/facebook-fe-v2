@@ -10,16 +10,16 @@ import {
     VStack,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { http } from '../../config/http';
+import { unwrap } from '../../config/api';
 
 const GameHistoryDetail = ({ detail, onClose }) => {
     const [historyDetail, setHistoryDetail] = useState([]);
     useEffect(() => {
         const fetchHistoryDetail = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_API_URL}/game/game_results/${detail?.id}`);
-                setHistoryDetail(response?.data?.data?.gameResults || []);
-                console.log("detail",response?.data?.data?.gameResults);
+                const response = await http.get(`/game/game_results/${detail?.id}`);
+                setHistoryDetail(unwrap(response)?.gameResults || []);
 
             } catch (error) {
                 console.error('Failed to fetch game history:', error);

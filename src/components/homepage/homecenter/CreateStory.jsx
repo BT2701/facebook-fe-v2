@@ -2,6 +2,7 @@ import { background } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { useUser } from '../../../context/UserContext';
 import { getUserById } from '../../../utils/getData';
+import { DEFAULT_USER_IMG } from '../../../config/env';
 const CreateStory = () => {
     const { currentUser } = useUser();
     const [user, setUser] = useState(null);
@@ -37,7 +38,7 @@ const CreateStory = () => {
                 alt=""
                 className="x5yr21d xl1xv1r xh8yej3"
                 referrerPolicy="origin-when-cross-origin"
-                src={user?.avatar || `${process.env.REACT_APP_DEFAULT_USER_IMG}`}
+                src={user?.avatar || DEFAULT_USER_IMG}
             />
             </div>
             <div></div>

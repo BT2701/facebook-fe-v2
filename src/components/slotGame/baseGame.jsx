@@ -13,8 +13,8 @@ import BuyFeatureModal from './buyFeature';
 import BetAmountModal from './betOptions';
 import AutoSpinOptions from './autoSpin';
 import { useUser } from "../../context/UserContext";
-import { use } from 'react';
-import axios from 'axios';
+import { http } from '../../config/http';
+import { unwrap } from '../../config/api';
 import GameHistory from './gameHistory';
 
 const autoSpinOptions = [10, 50, 100];
@@ -37,9 +37,10 @@ const BaseGame = () => {
   useEffect(() => {
     const fetchPlayerData = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/game/player/${currentUser?.id}`);
-        setPlayer(response?.data.data.player);
-        setBalance(response?.data.data.player.balance);
+        const response = await http.get(`/game/player/${currentUser?.id}`);
+        const playerData = unwrap(response)?.player;
+        setPlayer(playerData);
+        setBalance(playerData.balance);
       } catch (error) {
         console.error('Failed to fetch player data:', error);
       }
@@ -52,8 +53,8 @@ const BaseGame = () => {
   useEffect(() => {
     const fetchBetOptions = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/game/bets`);
-        setBetOptions(response?.data.data.bet_options);
+        const response = await http.get('/game/bets');
+        setBetOptions(unwrap(response)?.bet_options);
       } catch (error) {
         console.error('Failed to fetch bet options:', error);
       }
@@ -64,8 +65,10 @@ const BaseGame = () => {
 
   const handleSpin = async() => {
     const newBalance = player?.balance - betAmount;
-    const response = await axios.put(`${process.env.REACT_APP_API_URL}/game/player/${currentUser?.id}/balance?amount=${newBalance}`);
-    if (response?.data.status === 200) {
+    const response = await http.put(`/game/player/${currentUser?.id}/balance`, null, {
+      params: { amount: newBalance },
+    });
+    if (response?.data?.status === 200) {
       setFlag(1);
       setBalance(newBalance);
     }

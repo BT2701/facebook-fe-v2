@@ -6,9 +6,10 @@ import { Feed } from '../homepage/homecenter/Feed';
 import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Box, Button, Flex, Image, Spinner, useDisclosure } from '@chakra-ui/react';
 import { useSearchContext } from '../../context/SearchContext';
 import { useUser } from '../../context/UserContext';
-import { getFriendByUserId1AndUserId2, getRequestBySenderAndReceiver, getUserById } from '../../utils/getData';
+import { getRequestBySenderAndReceiver, getUserById, hydratePost, isFriendPair } from '../../utils/getData';
 import formatTimeFromDatabase from '../sharedComponents/formatTimeFromDatabase';
-import axios from 'axios';
+import { asArray, unwrap } from '../../config/api';
+import { http } from '../../config/http';
 import { handleRemoveFriend } from '../../utils/handleRequestFriend';
 import { useNotification } from '../../context/NotificationContext';
 
@@ -89,10 +90,12 @@ function SearchPage() {
 
     const fetchPostsData = async (keywords, offset) => {
         try {
-            const postResponse = await axios.get(`${process.env.REACT_APP_API_URL}/post/search?content=${keywords}&limit=${limitPost}&offset=${offset}&currentUserId=${currentUser.id}`);
-            const postData = await postResponse?.data;
+            const postResponse = await http.get('/post/search', {
+                params: { content: keywords, limit: limitPost, offset, currentUserId: currentUser.id },
+            });
+            const postData = asArray(unwrap(postResponse)?.posts);
 
-            if (postData && Array.isArray(postData?.$values)) {
+            if (Array.isArray(postData) && postData.length > 0) {
                 // const postsWithUserData = await Promise.all(
                 //     postData.$values.map(async (post) => {
                 //         // const user = await getUserById(post?.userId);
@@ -105,9 +108,7 @@ function SearchPage() {
                 // console.log("postwith", postsWithUserData);
                 // setPosts((prevPosts) => [...prevPosts, ...postsWithUserData]);
                 const fetchedPosts = await Promise.all(
-                    postData.$values.map((post) =>
-                        updatePostInfor(post.userId, post)
-                    )
+                    postData.map((post) => hydratePost(post, currentUser.id))
                 );
                 const uniquePosts = fetchedPosts.filter(
                     (newPost) => !posts.some((existingPost) => existingPost.id === newPost.id)
@@ -128,8 +129,10 @@ function SearchPage() {
     const cancelRef = React.useRef();
     const fetchUsersData = async (keywords, offset) => {
         try {
-            const userResponse = await axios.get(`${process.env.REACT_APP_API_URL}/user/search?name=${keywords}&limit=${limitUser}&offset=${offset}`);
-            const userData = await userResponse?.data;
+            const userResponse = await http.get('/user/search', {
+                params: { name: keywords, limit: limitUser, offset },
+            });
+            const userData = unwrap(userResponse);
 
             if (Array.isArray(userData)) {
                 // Lấy thông tin trạng thái bạn bè cho mỗi người dùng
@@ -152,8 +155,7 @@ function SearchPage() {
     };
     const fetchFriendStatus = async (currentUserId, friendId) => {
         try {
-            const resGetReq3 = await getFriendByUserId1AndUserId2(currentUserId, friendId);
-            if (resGetReq3 && resGetReq3.length !== 0) {
+            if (await isFriendPair(currentUserId, friendId)) {
                 return "friend";
             }
 
@@ -190,13 +192,13 @@ function SearchPage() {
             } else {
                 console.error('Lỗi: response hoặc response.data không xác định');
             }
-            if (post.comments.$values.length && Array.isArray(post.comments.$values)) {
-                const updatedComments = await Promise.all(
-                    post.comments.$values.map(async (comment) => {
-                        return await updateCommentInfor(comment.userId, comment);
+            const comments = Array.isArray(post.comments) ? post.comments : [];
+            if (comments.length) {
+                post.comments = await Promise.all(
+                    comments.map(async (comment) => {
+                        return await updateCommentInfor(comment.user_id || comment.userId, comment);
                     })
                 );
-                post.comments.$value = updatedComments;
             }
             return post;
         } catch (error) {
@@ -210,7 +212,7 @@ function SearchPage() {
             const response = await getUserById(userId);
             if (response && response?.data) {
                 comment.profilePic = response?.data.avatar;
-                comment.profileName = response?.data.data.name;
+                comment.profileName = response?.data.name;
             } else {
                 console.error('Lỗi: response hoặc response.data không xác định');
             }
@@ -225,7 +227,7 @@ function SearchPage() {
     const updateCommentsForPost = (postId, updatedComments) => {
         setPosts((prevPosts) =>
             prevPosts.map((post) =>
-                post.id === postId ? { ...post, comments: { $values: updatedComments } } : post
+                post.id === postId ? { ...post, comments: updatedComments } : post
             )
         );
     };
@@ -382,10 +384,10 @@ function SearchPage() {
                                         userName={post.profileName}
                                         postImage={post.image}
                                         likedByCurrentUser={post.likedByCurrentUser}
-                                        likeCount={post.reactions.$values.length}
-                                        commentList={post.comments.$values}
+                                        likeCount={post.likeCount || 0}
+                                        commentList={post.comments || []}
                                         currentUserId={currentUser.id}
-                                        userCreatePost={post.userId}
+                                        userCreatePost={post.user_id}
                                         setPosts={setPosts}
                                         posts={posts}
                                         updateComments={updateCommentsForPost}

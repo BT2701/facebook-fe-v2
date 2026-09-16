@@ -11,6 +11,7 @@ import { UserProvider } from "./context/UserContext";
 import * as process from "process";
 import { SearchProvider } from "./context/SearchContext";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import "./config/http";
 const theme = createTheme();
 window.global = window;
 window.process = process;

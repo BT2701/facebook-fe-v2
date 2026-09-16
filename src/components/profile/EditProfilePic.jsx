@@ -1,7 +1,8 @@
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Button, useDisclosure, Divider, Box, Heading, Image, Flex, Spacer, useToast, Spinner } from '@chakra-ui/react';
 import { RiEdit2Fill } from 'react-icons/ri';
 import { useRef, useState } from "react";
-import axios from 'axios';
+import { API_URL } from '../../config/env';
+import { http } from '../../config/http';
 
 export const EditProfilePic = ({ m, w, title, setMyPic, myPic, user, setUploadImage }) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -49,11 +50,11 @@ export const EditProfilePic = ({ m, w, title, setMyPic, myPic, user, setUploadIm
             formData.append("story_id", "");
 
             console.log("formData: ", formData.get("imageFile").name);
-            setAvtUrl(`${process.env.REACT_APP_API_URL}/media${formData.get("imageFile").name}`);
-            const uploadAvtResponse = await axios.post(`${process.env.REACT_APP_API_URL}/media/image`, formData);
-            const updateResponse = await axios.put(`${process.env.REACT_APP_API_URL}/user/api/avatar`, {
+            setAvtUrl(`${API_URL}/media${formData.get("imageFile").name}`);
+            const uploadAvtResponse = await http.post('/media/image', formData);
+            const updateResponse = await http.put('/user/api/avatar', {
                 "email": user.email,
-                "avatar": `${process.env.REACT_APP_API_URL}/media/uploads/${formData.get("imageFile").name}`
+                "avatar": `${API_URL}/media/uploads/${formData.get("imageFile").name}`
             });
             console.log("uploadAvtResponse: ", uploadAvtResponse?.data.data.url);
             setFile(null);

@@ -1,4 +1,3 @@
-// Notifications.jsx
 import {
     Avatar,
     Box,
@@ -11,28 +10,26 @@ import {
     Text,
     VStack,
     Button,
-    Flex
-} from "@chakra-ui/react";
-import { BellIcon } from "@chakra-ui/icons";
-import './Notification.css'
-import { useEffect, useState } from "react";
-import axios from "axios";
-import formatTimeFromDatabase from "../sharedComponents/formatTimeFromDatabase";
-import { fetchDataForNotification, getUserById, markAllAsReadNotification, markAsReadNotification } from "../../utils/getData";
-import { useUser } from "../../context/UserContext";
-import PostRedirect from "./PostRedirect";
-// import { useChatConn } from "../../context/ChatConnContext";
-import { useNavigate } from "react-router-dom";
-
+    Flex,
+} from '@chakra-ui/react';
+import { BellIcon } from '@chakra-ui/icons';
+import './Notification.css';
+import { useEffect, useState } from 'react';
+import formatTimeFromDatabase from '../sharedComponents/formatTimeFromDatabase';
+import { fetchDataForNotification, getUserById, markAllAsReadNotification, markAsReadNotification } from '../../utils/getData';
+import { useUser } from '../../context/UserContext';
+import { useNotification } from '../../context/NotificationContext';
+import PostRedirect from './PostRedirect';
+import { useNavigate } from 'react-router-dom';
 
 const NotificationItem = ({ avatarSrc, title, message, time, is_read, onClick }) => (
     <MenuItem
-        _hover={{ background: "#f0f2f5" }}
+        _hover={{ background: '#f0f2f5' }}
         p={3}
         borderRadius="md"
         alignItems="center"
         className="notification-item"
-        bg={is_read === 0 ? "gray.100" : "white"}
+        bg={is_read === 0 ? 'gray.100' : 'white'}
         onClick={onClick}
     >
         <Avatar src={avatarSrc} size="mm" mr={3} className="notification-item-avt" />
@@ -51,7 +48,6 @@ const NotificationItem = ({ avatarSrc, title, message, time, is_read, onClick })
                     {message}
                 </Text>
             </Box>
-
             <Text fontSize="xs" color="gray.400" className="notification-item-time">
                 {time}
             </Text>
@@ -61,78 +57,61 @@ const NotificationItem = ({ avatarSrc, title, message, time, is_read, onClick })
 
 const Notifications = () => {
     const [notificationList, setNotificationList] = useState([]);
-    const [readNotification, setReadNotification] = useState(0);
     const [unreadCount, setUnreadCount] = useState(0);
     const [userNames, setUserNames] = useState({});
     const { currentUser } = useUser();
+    const { inboxTick } = useNotification();
     const [openDialog, setOpenDialog] = useState(false);
     const [feedId, setFeedId] = useState(null);
-    // const { chatConn } = useChatConn();
     const nav = useNavigate();
     const [userId, setUserId] = useState({});
     const [actionId, setActionId] = useState({});
 
-    const fetchUser = async (id) => {
-        const user = await getUserById(id);
-        return user?.data || 'Unknown';
+    const loadInbox = async () => {
+        if (!currentUser?.id) {
+            return;
+        }
+        const items = await fetchDataForNotification(currentUser.id);
+        setNotificationList(items);
+        setUnreadCount(items.filter((item) => item.is_read === 0).length);
+
+        const users = await Promise.all(
+            items.map(async (notification) => {
+                const user = await getUserById(notification.user);
+                return { [notification.user]: user?.data || user };
+            })
+        );
+        setUserNames(Object.assign({}, ...users));
     };
 
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         const response = await fetchDataForNotification( currentUser.id );
-    //         if (response) {
-    //             setNotificationList(response?.data);
-    //             const unreadCount = response?.data.filter(item => item.is_read === 0).length;
-    //             setUnreadCount(unreadCount);
-
-    //             const users = await Promise.all(
-    //                 response?.data.map(async (notification) => {
-    //                     const user = await fetchUser(notification.user);
-    //                     return { [notification.user]: user };
-    //                 })
-    //             );
-
-    //             // Combine each result into a single object with user IDs as keys
-    //             setUserNames(Object.assign({}, ...users));
-    //         }
-    //     };
-    //     fetchData();
-    //     setReadNotification(0);
-    // }, [readNotification, notificationList.length]);
-
-    // useEffect(() => {
-    //     if (chatConn) {
-    //         chatConn.on("ReceiveNotification", (notification) => {
-    //             setNotificationList((prev) => [...prev, notification]);
-    //         });
-    //         chatConn.on("DeleteNotification", (notification1) => {
-    //             setNotificationList((prev) => prev.filter(notification => notification.id !== notification1.id));
-    //         });
-    //     }
-    // }, [chatConn]);
+    useEffect(() => {
+        loadInbox();
+        const timer = setInterval(loadInbox, 15000);
+        return () => clearInterval(timer);
+    }, [currentUser?.id, inboxTick]);
 
     const markAllAsRead = async () => {
         try {
             await markAllAsReadNotification(currentUser.id);
-            setReadNotification(1);
+            await loadInbox();
         } catch (error) {
             console.error('Error marking all as read:', error);
         }
     };
-    const markAsRead = async (id, feedId, action, user) => {
+
+    const markAsRead = async (id, nextFeedId, action, user) => {
         try {
             await markAsReadNotification(id);
-            setReadNotification(1);
+            await loadInbox();
             if (action === 1 || action === 2 || action === 5) {
-                if (!feedId) return; //bài viết không tồn tại rồi xóa
-                else {
-                    setFeedId(feedId);
-                    setUserId(user);
-                    setActionId(action);
-                    setOpenDialog(true);
+                if (!nextFeedId || nextFeedId === '0') {
+                    return;
                 }
-            }
-            else if (action === 3 || action === 4) {
+                setFeedId(nextFeedId);
+                setUserId(user);
+                setActionId(action);
+                setOpenDialog(true);
+            } else if (action === 3 || action === 4) {
                 nav(`/profile?id=${user}`);
             }
         } catch (error) {
@@ -149,9 +128,7 @@ const Notifications = () => {
                     rounded="full"
                     position="relative"
                 >
-                    <BellIcon
-                        transform="translateY(-1px)" />
-                    {/* Số đếm thông báo chưa đọc */}
+                    <BellIcon transform="translateY(-1px)" />
                     {unreadCount > 0 && (
                         <Box
                             position="absolute"
@@ -173,7 +150,6 @@ const Notifications = () => {
                     )}
                 </MenuButton>
                 <MenuList w="360px" maxH="400px" p={0} boxShadow="lg">
-                    {/* Tiêu đề và nút "Đánh dấu đã đọc" */}
                     <Box p={3} borderBottom="1px solid #e2e8f0">
                         <Flex justifyContent="space-between" alignItems="center" height={8}>
                             <Text fontSize="lg" fontWeight="bold">
@@ -186,7 +162,6 @@ const Notifications = () => {
                             )}
                         </Flex>
                     </Box>
-                    {/* Danh sách thông báo */}
                     <Box maxH="320px" overflowY="auto" p={2}>
                         <VStack align="stretch">
                             {notificationList.length === 0 ? (
@@ -212,13 +187,12 @@ const Notifications = () => {
                 feedId={feedId}
                 open={openDialog}
                 onClose={() => setOpenDialog(false)}
-                currentUser={currentUser.id}
+                currentUser={currentUser?.id}
                 user={userId}
                 action={actionId}
             />
         </Center>
     );
 };
-
 
 export default Notifications;

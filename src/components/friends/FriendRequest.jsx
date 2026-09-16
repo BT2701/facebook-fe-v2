@@ -3,7 +3,8 @@ import "./friendrequest.css";
 import { Leftsidebar } from "./Leftsidebar";
 import CustomCard from "./customCard";
 import { Box, SimpleGrid, Text } from "@chakra-ui/react";
-import { getDataRequests,getAllFriends ,getFriendSuggestions,getUserById,getAllRequests} from "../../utils/getData"; 
+import { getDataRequests,getAllFriends ,getFriendSuggestions,getUserById,getAllRequests} from "../../utils/getData";
+import { DEFAULT_USER_IMG } from "../../config/env"; 
 import { useLocation } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
 
@@ -47,9 +48,9 @@ export const FriendRequest = () => {
                 const requestWithSenderInfo = {
                     ...request,
                     Info: {
-                        id: senderInfo?.data.data.id, // Thay đổi ở đây để lấy ID người gửi từ request
-                        name: senderInfo?.data.name, // Hoặc bạn có thể gọi API để lấy tên thực tế
-                        avatar: senderInfo?.data.avatar || `${process.env.REACT_APP_DEFAULT_USER_IMG}`
+                        id: senderInfo?.data?.id,
+                        name: senderInfo?.data?.name,
+                        avatar: senderInfo?.data?.avatar || DEFAULT_USER_IMG
                     },
                     status: "friendRequest" // Thêm thuộc tính status với giá trị là "friendRequest"
                 };
@@ -95,7 +96,7 @@ export const FriendRequest = () => {
                 Info: {
                     id: suggestion.id, // Lấy Id từ gợi ý
                     name: suggestion.name , // Tên bạn bè, nếu không có thì sử dụng ID
-                    avatar: suggestion.avatar || `${process.env.REACT_APP_DEFAULT_USER_IMG}`
+                    avatar: suggestion.avatar || `${DEFAULT_USER_IMG}`
                 },
                 status: "suggest" // Thêm thuộc tính status với giá trị là "suggest"
             }));
@@ -140,7 +141,7 @@ export const FriendRequest = () => {
                     Info: {
                         id: friend.id, // Lấy ID của người bạn
                         name: friend.name, // Tạm thời giả lập tên bạn bè
-                        avatar: friend.avatar || `${process.env.REACT_APP_DEFAULT_USER_IMG}`
+                        avatar: friend.avatar || `${DEFAULT_USER_IMG}`
                     },
                     status: "friend" // Thêm thuộc tính status với giá trị là "friendRequest"
                 };

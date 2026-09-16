@@ -6,7 +6,7 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom/dist";
 import { EditProfilePic } from "./EditProfilePic";
 import { useUser } from "../../context/UserContext";
-import { addFriend, addRequest, deleteRequestById, deleteRequestBySenderIdAndReceiverId, getFriendByUserId1AndUserId2, getRequestBySenderAndReceiver, getUserById, removeFriend } from "../../utils/getData"; // Giả sử các API này tồn tại
+import { addFriend, addRequest, deleteRequestById, deleteRequestBySenderIdAndReceiverId, getRequestBySenderAndReceiver, getUserById, isFriendPair, removeFriend } from "../../utils/getData";
 import { AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay } from "@chakra-ui/react";
 import { handleRemoveFriend } from "../../utils/handleRequestFriend";
 import { useNotification } from "../../context/NotificationContext";
@@ -61,9 +61,7 @@ export const ProfileNav = () => {
 
             if (userId === currentUser.id) return;
             // console.log(1)
-            const resGetReq3 = await getFriendByUserId1AndUserId2(currentUser.id, userId);
-            // console.log(resGetReq3);
-            if (resGetReq3 && resGetReq3.length !== 0) {
+            if (await isFriendPair(currentUser.id, userId)) {
                 setFriendStatus("friend");
                 return;
             }

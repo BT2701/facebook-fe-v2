@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
 import { useToast } from "@chakra-ui/react";
+import { http } from "../../config/http";
 
 const ConfirmEmail = () => {
   const { email } = useParams(); // Lấy email từ đường dẫn
@@ -11,9 +11,7 @@ const ConfirmEmail = () => {
   useEffect(() => {
     const confirmEmail = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/user/confirm-email?email=${email}`
-        );
+        const response = await http.get('/user/api/user', { params: { email } });
 
         if (response.status === 200) {
           toast({

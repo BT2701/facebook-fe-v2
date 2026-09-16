@@ -1,7 +1,7 @@
 import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Box, Button, Center, Flex, Heading, Image, SimpleGrid, Text, useDisclosure } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { addFriend, addRequest, deleteRequestById, deleteRequestBySenderIdAndReceiverId, getFriendByUserId1AndUserId2, getFriendsByUserId, getRequestBySenderAndReceiver, removeFriend } from "../../utils/getData";
+import { addFriend, addRequest, deleteRequestById, deleteRequestBySenderIdAndReceiverId, getFriendsByUserId, getRequestBySenderAndReceiver, isFriendPair, removeFriend } from "../../utils/getData";
 import { useOutletContext } from "react-router-dom/dist";
 import { useUser } from "../../context/UserContext";
 import { handleAcceptRequest, handleCancelRequest, handleRemoveFriend, handleRemoveRequest, handleSendRequest } from "../../utils/handleRequestFriend";
@@ -19,8 +19,7 @@ const FriendBox = ({ currentUserId, name, src, friendId, setIsUpdateFriends }) =
 
     useEffect(() => {
         const handleRequestAndFriend = async () => {
-            const resGetReq3 = await getFriendByUserId1AndUserId2(currentUserId, friendId);
-            if(resGetReq3 && resGetReq3.length !== 0) {
+            if (await isFriendPair(currentUserId, friendId)) {
                 setFriendStatus("friend");
                 return;
             }

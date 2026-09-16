@@ -4,6 +4,7 @@ import { IoMdVideocam } from "react-icons/io";
 import { MdPhotoLibrary, MdOutlineMood } from "react-icons/md";
 import { CreatePost } from "./CreatePost";
 import { getUserById } from "../../../utils/getData";
+import { DEFAULT_USER_IMG } from "../../../config/env";
 import { useEffect, useState } from "react";
 
 export const MessageSender = ({ setPosts, currentUserId, setLastPostId, updatePostInfor }) => {
@@ -20,7 +21,7 @@ export const MessageSender = ({ setPosts, currentUserId, setLastPostId, updatePo
   return (
     <div className="messageSender">
       <div className="messageSender__top">
-        <Avatar mr={4} src={user?.avatar || `${process.env.REACT_APP_DEFAULT_USER_IMG}`} />
+        <Avatar mr={4} src={user?.avatar || DEFAULT_USER_IMG} />
         <Button
           w={"80%"}
           rounded={"full"}

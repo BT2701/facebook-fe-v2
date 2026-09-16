@@ -20,10 +20,11 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { Signup } from "./Signup";
-import axios from "axios";
 import { useUser } from "../../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
+import { http } from "../../config/http";
+import { saveSession } from "../../config/auth";
 
 export const Login = () => {
   const [email, setEmail] = useState("");
@@ -58,35 +59,31 @@ export const Login = () => {
       return;
     }
     // Handle login logic here
-    await axios.post(`${process.env.REACT_APP_API_URL}/user/api/login`, {
-      email,
-      password
-    }).then((response) => {
-      console.log('Login response:', response.data);
-      localStorage.setItem('token', response.data?.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data?.data.user));
-      setCurrentUser(response.data?.data.user);
+    try {
+      const response = await http.post('/user/api/login', { email, password });
+      const token = response.data?.data?.token;
+      const user = response.data?.data?.user;
+      saveSession(token, user);
+      setCurrentUser(user);
+      setLoginAttempts(0);
       toast({
-        title: "Login successed.",
-        description:
-          "Well come to Facebook.",
-        status: "success",
+        title: 'Login succeeded.',
+        description: 'Welcome to Facebook.',
+        status: 'success',
         duration: 3000,
         isClosable: true,
       });
       navigate('/');
-    }
-    ).catch((error) => {
+    } catch (error) {
+      setLoginAttempts((prev) => prev + 1);
       toast({
-        title: "Error.",
-        description:
-          error.response?.data?.message || "Failed to login",
-        status: "error",
+        title: 'Error.',
+        description: error.response?.data?.error || error.response?.data?.message || 'Failed to login',
+        status: 'error',
         duration: 3000,
         isClosable: true,
       });
-      console.error('Login error:', error);
-    });
+    }
   };
 
   const handleKeyDown = (e) => {

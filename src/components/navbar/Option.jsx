@@ -18,14 +18,14 @@ import {
   SettingsIcon,
   TriangleDownIcon,
 } from "@chakra-ui/icons";
-import axios from "axios";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Notifications from "../notification/Notification";
 import ChatMenu from "./ChatMenu";
 import { useUser } from "../../context/UserContext.js";
 import { useEffect, useState } from "react";
 import { getUserById } from "../../utils/getData.js";
-import { API_URL } from "../../config/env";
+import { http } from "../../config/http";
+import { clearSession } from "../../config/auth";
 
 const Item = ({ iconName, title }) => {
   return (
@@ -44,17 +44,14 @@ export const Option = () => {
   const handleLogout = async () => {
     try {
       // Gọi API để logout
-      await axios.put(`${API_URL}/user/api/logout`, currentUser.email, {
-        withCredentials: true,
-      });
-
-      // Xóa session ở phía frontend
-      localStorage.clear();
-
-      // Chuyển hướng người dùng về trang login
-      nav("/login");
+      if (currentUser?.email) {
+        await http.put('/user/api/logout', { email: currentUser.email });
+      }
+      clearSession();
+      nav('/login');
     } catch (error) {
-      console.error("Logout failed:", error);
+      clearSession();
+      nav('/login');
     }
   };
 
