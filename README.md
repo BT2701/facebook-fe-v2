@@ -4,7 +4,7 @@ React client for the [facebook-be-v2](https://github.com/BT2701/facebook-be-v2) 
 
 ## Version
 
-**0.3.0** — aligned with backend gateway-only access, JWT writes, and Redis notification events.
+**0.4.0** — floating AI chatbox talks to `GET/POST /ai/chat` on Kong.
 
 ## Introduction
 

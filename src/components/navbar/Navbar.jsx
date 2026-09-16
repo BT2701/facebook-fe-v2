@@ -3,24 +3,9 @@ import { Search } from "./Search";
 import { Option } from "./Option";
 import { CenterLinks } from "./CenterLinks";
 import { Outlet } from "react-router-dom";
-// import { useChatConn } from "../../context/ChatConnContext";
-import { useEffect } from "react";
-import { useUser } from "../../context/UserContext";
-// import ChatManage from "./ChatManage";
+import AIChatBox from "../ai/AIChatBox";
 
 export const Navbar = () => {
-  // const { connectChat } = useChatConn();
-  const { currentUser } = useUser();
-
-  // const initializeConnection = async () => {
-  //   // Connect to chathub
-  //   await connectChat(currentUser.id);
-  // };
-
-  // useEffect(() => {
-  //   initializeConnection();
-  // }, []);
-
   return (
     <>
       {/* Chat Manage */}
@@ -48,6 +33,7 @@ export const Navbar = () => {
       <Box pt={"57px"}>
         <Outlet />
       </Box>
+      <AIChatBox />
     </>
   );
 };
